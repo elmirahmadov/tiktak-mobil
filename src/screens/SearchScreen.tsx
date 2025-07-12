@@ -48,10 +48,15 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   const filteredProducts = React.useMemo(() => {
     if (!searchQuery.trim()) return [];
     const query = searchQuery.toLowerCase().trim();
+    const seen = new Set();
     return allProducts.filter((p: any) => {
       const title = (p.title || p.name || '').toLowerCase();
       const description = (p.description || '').toLowerCase();
-      return title.includes(query) || description.includes(query);
+      const isMatch = title.includes(query) || description.includes(query);
+      if (!isMatch) return false;
+      if (seen.has(p.id)) return false;
+      seen.add(p.id);
+      return true;
     });
   }, [allProducts, searchQuery]);
 
@@ -106,7 +111,32 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           searchQuery.trim() && !productsLoading ? (
-            <Text style={styles.emptyText}>Axtarış nəticəsi tapılmadı</Text>
+            <View style={{ alignItems: 'center', marginTop: 40 }}>
+              <View
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: '#F2F2F2',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginBottom: 16,
+                }}
+              >
+                <Feather name="x" size={48} color="#D1D1D1" />
+              </View>
+              <Text
+                style={{
+                  color: '#D1D1D1',
+                  fontSize: 16,
+                  marginTop: 8,
+                  textAlign: 'center',
+                  fontWeight: '500',
+                }}
+              >
+                Axtarış nəticəsi tapılmadı
+              </Text>
+            </View>
           ) : null
         }
         keyboardShouldPersistTaps="handled"
