@@ -48,9 +48,9 @@ const CheckoutScreen = ({ navigation }: { navigation: any }) => {
         return;
       }
       await orderCheckout(payload as any);
-      actions.reset(); // Səbəti sıfırla
-      await AsyncStorage.removeItem('basket-store'); // Persisted səbəti də sil
-      // Alert yerine başarı ekranına yönlendir
+      actions.reset();
+      await AsyncStorage.removeItem('basket-store');
+
       navigation.replace('OrderSuccess');
     } catch (e: any) {
       if (e.response) {

@@ -198,7 +198,6 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
     );
   };
 
-  // Yukarıya ekleyeceğimiz Sifarişlər kutusu için sepet verileri
   const basketCount = basketItems.reduce(
     (sum, item) => sum + (item.quantity || 0),
     0,
@@ -329,7 +328,7 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
           />
         )}
       </View>
-      {/* Sifarişlər kutusu Footer'ın hemen üstünde, sadece sepet doluysa */}
+
       {basketCount > 0 && (
         <TouchableOpacity
           style={styles.orderBoxWrapper}
@@ -358,6 +357,10 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
         isVisible={isModalVisible}
         onBackdropPress={closeModal}
         style={{ justifyContent: 'flex-end', margin: 0 }}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        animationInTiming={300}
+        animationOutTiming={300}
       >
         {selectedProduct && (
           <View
@@ -367,8 +370,32 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
               borderTopRightRadius: 24,
               padding: 24,
               alignItems: 'center',
+              position: 'relative',
             }}
           >
+            <View
+              style={{
+                width: 48,
+                height: 4,
+                borderRadius: 2,
+                backgroundColor: '#E0E0E0',
+                alignSelf: 'center',
+                marginBottom: 16,
+                marginTop: 4,
+              }}
+            />
+
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                top: 24,
+                right: 24,
+                zIndex: 2,
+              }}
+              activeOpacity={0.7}
+            >
+              <Feather name="heart" size={28} color="#BDBDBD" />
+            </TouchableOpacity>
             <Image
               source={
                 selectedProduct.img_url
@@ -376,10 +403,11 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
                   : defaultProductImage
               }
               style={{
-                width: 120,
-                height: 120,
+                width: 140,
+                height: 140,
                 borderRadius: 16,
                 marginBottom: 16,
+                marginTop: 16,
               }}
               resizeMode="contain"
             />
@@ -406,7 +434,12 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
                 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'}
             </Text>
             <Text
-              style={{ fontWeight: 'bold', fontSize: 22, marginBottom: 16 }}
+              style={{
+                fontWeight: 'bold',
+                fontSize: 24,
+                marginBottom: 24,
+                textAlign: 'center',
+              }}
             >
               {selectedProduct.price} AZN
             </Text>
@@ -414,10 +447,11 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
               style={{
                 backgroundColor: '#76CB4F',
                 borderRadius: 8,
-                paddingVertical: 12,
+                paddingVertical: 14,
                 paddingHorizontal: 32,
-                minWidth: 180,
+                minWidth: 220,
                 alignItems: 'center',
+                marginBottom: 8,
               }}
               onPress={() => {
                 handleAddToBasket(selectedProduct);

@@ -106,7 +106,9 @@ const HomeScreen: React.FC<NavigationProps> = ({ navigation }) => {
     [handleCategoryPress],
   );
 
-  const isLoading = campaignsLoading || categoriesLoading;
+  const isLoading =
+    (campaignsLoading && (!campaigns || campaigns.length === 0)) ||
+    (categoriesLoading && (!categories || categories.length === 0));
 
   return (
     <View style={styles.container}>

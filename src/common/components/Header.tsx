@@ -22,20 +22,31 @@ const Header = ({ navigation }: { navigation?: any }) => {
   return (
     <View style={styles.header}>
       <Text style={styles.title}>TIK TAK</Text>
-      <TouchableOpacity
-        onPress={() =>
-          navigation && navigation.navigate && navigation.navigate('Basket')
-        }
-      >
-        <View style={{ position: 'relative' }}>
-          <Feather name="shopping-cart" size={24} color="#222" />
-          {totalCount > 0 && (
-            <View style={styles.badgeContainer}>
-              <Text style={styles.badgeText}>{totalCount}</Text>
-            </View>
-          )}
-        </View>
-      </TouchableOpacity>
+      <View style={styles.headerActions}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation && navigation.navigate && navigation.navigate('Search')
+          }
+          style={styles.actionButton}
+        >
+          <Feather name="search" size={24} color="#222" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            navigation && navigation.navigate && navigation.navigate('Basket')
+          }
+          style={styles.actionButton}
+        >
+          <View style={{ position: 'relative' }}>
+            <Feather name="shopping-cart" size={24} color="#222" />
+            {totalCount > 0 && (
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>{totalCount}</Text>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -59,6 +70,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 22,
     color: '#222',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    marginLeft: 16,
   },
   badgeContainer: {
     position: 'absolute',

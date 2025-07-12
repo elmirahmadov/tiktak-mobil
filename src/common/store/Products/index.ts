@@ -1,19 +1,23 @@
 import { useProductsStore } from './products.store';
 import { IProductsStore } from './products.types';
+import { shallow } from 'zustand/shallow';
 
 export const useProductsActions = () =>
   useProductsStore((state: IProductsStore) => state.actions);
 
 export const useProducts = () =>
-  useProductsStore((state: IProductsStore) => ({
-    products: state.products,
-    selectedProduct: state.selectedProduct,
-    loading: state.loading,
-    totalProducts: state.totalProducts,
-    currentPage: state.currentPage,
-    hasMore: state.hasMore,
-    favorites: state.favorites,
-  }));
+  useProductsStore(
+    (state: IProductsStore) => ({
+      products: state.products,
+      selectedProduct: state.selectedProduct,
+      loading: state.loading,
+      totalProducts: state.totalProducts,
+      currentPage: state.currentPage,
+      hasMore: state.hasMore,
+      favorites: state.favorites,
+    }),
+    shallow,
+  );
 
 export const useProductsLoading = () =>
   useProductsStore((state: IProductsStore) => state.loading);

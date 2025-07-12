@@ -12,7 +12,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useBasketStore } from '../common/store/Basket';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-// Type definitions
 export type BasketItem = {
   product_id: number;
   quantity: number;
@@ -51,7 +50,6 @@ const BasketScreen: React.FC<BasketScreenProps> = ({ navigation }) => {
     await actions.removeFromBasket({ product_id: pid });
   };
 
-  // Sort basketItems by product_id to keep order stable
   const sortedBasketItems = [...basketItems].sort((a, b) => {
     const aid = getProductId(a);
     const bid = getProductId(b);
@@ -96,7 +94,6 @@ const BasketScreen: React.FC<BasketScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.headerRowCentered}>
         <View style={{ width: 32, alignItems: 'flex-start' }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -111,9 +108,7 @@ const BasketScreen: React.FC<BasketScreenProps> = ({ navigation }) => {
         <View style={{ width: 32 }} />
       </View>
 
-      {/* Content */}
       {sortedBasketItems.length === 0 ? (
-        // Boş sepet durumu
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconWrapper}>
             <Feather name="x" size={64} color="#D1D1D1" />
@@ -121,7 +116,6 @@ const BasketScreen: React.FC<BasketScreenProps> = ({ navigation }) => {
           <Text style={styles.emptyText}>Səbətinizdə məhsul yoxdur</Text>
         </View>
       ) : (
-        // Dolu sepet durumu
         <>
           <FlatList
             data={sortedBasketItems}
@@ -181,7 +175,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#222',
   },
-  // Boş sepet stilleri
+
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -204,7 +198,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
   },
-  // Ürün item stilleri
+
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -264,7 +258,7 @@ const styles = StyleSheet.create({
     minWidth: 24,
     textAlign: 'center',
   },
-  // Özet kutusu stilleri
+
   summaryBox: {
     marginHorizontal: 16,
     marginTop: 8,
@@ -294,7 +288,7 @@ const styles = StyleSheet.create({
     color: '#222',
     fontSize: 14,
   },
-  // Sipariş butonu
+
   orderBtn: {
     backgroundColor: '#A6E6A6',
     borderRadius: 8,
