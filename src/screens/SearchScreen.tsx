@@ -284,8 +284,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: '#E0E0E0',
     marginBottom: 12,
     padding: 10,
   },
