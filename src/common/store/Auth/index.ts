@@ -9,6 +9,8 @@ export const useAuth = () =>
     user: state.user,
     isAuthenticated: state.isAuthenticated,
     loading: state.loading,
+    accessToken: state.accessToken,
+    refreshToken: state.refreshToken,
   }));
 
 export const useAuthReset = () =>

@@ -11,12 +11,12 @@ const Footer = ({ navigation, active }) => (
       <Feather
         name="home"
         size={22}
-        color={active === 'Home' ? '#6DD96D' : '#bbb'}
+        color={active === 'Home' ? '#76CB4F' : '#bbb'}
       />
       <Text
         style={[
           styles.tabText,
-          { color: active === 'Home' ? '#6DD96D' : '#bbb' },
+          { color: active === 'Home' ? '#76CB4F' : '#bbb' },
         ]}
       >
         Əsas
@@ -29,12 +29,12 @@ const Footer = ({ navigation, active }) => (
       <Feather
         name="search"
         size={22}
-        color={active === 'Search' ? '#6DD96D' : '#bbb'}
+        color={active === 'Search' ? '#76CB4F' : '#bbb'}
       />
       <Text
         style={[
           styles.tabText,
-          { color: active === 'Search' ? '#6DD96D' : '#bbb' },
+          { color: active === 'Search' ? '#76CB4F' : '#bbb' },
         ]}
       >
         Axtar
@@ -47,12 +47,12 @@ const Footer = ({ navigation, active }) => (
       <Feather
         name="user"
         size={22}
-        color={active === 'Profile' ? '#6DD96D' : '#bbb'}
+        color={active === 'Profile' ? '#76CB4F' : '#bbb'}
       />
       <Text
         style={[
           styles.tabText,
-          { color: active === 'Profile' ? '#6DD96D' : '#bbb' },
+          { color: active === 'Profile' ? '#76CB4F' : '#bbb' },
         ]}
       >
         Hesabım
@@ -67,9 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     height: 60,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    backgroundColor: '#fff',
+    backgroundColor: '#F7F7F7F',
   },
   tab: {
     alignItems: 'center',

@@ -1,15 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import { useBasketStore } from '../store/Basket';
 
-const Header = () => (
-  <View style={styles.header}>
-    <Text style={styles.title}>TIK TAK</Text>
-    <TouchableOpacity>
-      <Feather name="shopping-cart" size={24} color="#222" />
-    </TouchableOpacity>
-  </View>
-);
+const Header = () => {
+  const basketItems = useBasketStore(state => state.items);
+  const totalCount = Array.isArray(basketItems)
+    ? basketItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
+    : 0;
+  return (
+    <View style={styles.header}>
+      <Text style={styles.title}>TIK TAK</Text>
+      <TouchableOpacity>
+        <View style={{ position: 'relative' }}>
+          <Feather name="shopping-cart" size={24} color="#222" />
+          {totalCount > 0 && (
+            <View style={styles.badgeContainer}>
+              <Text style={styles.badgeText}>{totalCount}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   header: {
@@ -20,11 +34,35 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 8,
     backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
   title: {
     fontWeight: 'bold',
     fontSize: 22,
     color: '#222',
+  },
+  badgeContainer: {
+    position: 'absolute',
+    right: -10,
+    top: -10,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#F44336',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    zIndex: 10,
+  },
+  badgeText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
 
