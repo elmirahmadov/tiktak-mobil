@@ -198,9 +198,19 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
     );
   };
 
+  // Yukarıya ekleyeceğimiz Sifarişlər kutusu için sepet verileri
+  const basketCount = basketItems.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0,
+  );
+  const basketTotal = basketItems.reduce(
+    (sum, item) => sum + (item.product?.price || 0) * item.quantity,
+    0,
+  );
+
   return (
     <View style={styles.container}>
-      <Header />
+      <Header navigation={navigation} />
       <View style={styles.stickyTop}>
         <TouchableOpacity
           style={styles.mainCategoryButton}
@@ -262,15 +272,13 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
             style={{
               flexDirection: 'row',
               flexWrap: 'wrap',
-              justifyContent: 'center',
-              padding: 16,
+              justifyContent: 'space-between',
+              paddingHorizontal: CARD_HORIZONTAL_PADDING,
+              paddingTop: 8,
             }}
           >
             {Array.from({ length: 4 }).map((_, i) => (
-              <View
-                key={i}
-                style={[styles.productCard, { backgroundColor: '#eee' }]}
-              />
+              <View key={i} style={styles.skeletonProductCard} />
             ))}
           </View>
         ) : (
@@ -283,14 +291,66 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
             columnWrapperStyle={styles.productRow}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
-              <Text style={styles.emptyText}>
-                Bu kateqoriyada məhsul yoxdur.
-              </Text>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 40,
+                }}
+              >
+                <View
+                  style={{
+                    width: 120,
+                    height: 120,
+                    borderRadius: 60,
+                    backgroundColor: '#F2F2F2',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginBottom: 16,
+                  }}
+                >
+                  <Feather name="x" size={64} color="#D1D1D1" />
+                </View>
+                <Text
+                  style={{
+                    color: '#D1D1D1',
+                    fontSize: 16,
+                    marginTop: 8,
+                    textAlign: 'center',
+                    fontWeight: '500',
+                  }}
+                >
+                  Bu kateqoriyada məhsul yoxdur
+                </Text>
+              </View>
             }
             extraData={basketItems}
           />
         )}
       </View>
+      {/* Sifarişlər kutusu Footer'ın hemen üstünde, sadece sepet doluysa */}
+      {basketCount > 0 && (
+        <TouchableOpacity
+          style={styles.orderBoxWrapper}
+          activeOpacity={0.85}
+          onPress={() => navigation.navigate('Basket')}
+        >
+          <View style={styles.orderBox}>
+            <View style={styles.orderBoxLeft}>
+              <View style={styles.orderBoxCircle}>
+                <Text style={styles.orderBoxCircleText}>{basketCount}</Text>
+              </View>
+              <Text style={styles.orderBoxLabel}>Sifarişlər</Text>
+            </View>
+            <View style={styles.orderBoxRight}>
+              <Text style={styles.orderBoxPrice}>
+                ₼ {basketTotal.toFixed(2)}
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      )}
       <View style={{ backgroundColor: '#fff' }}>
         <Footer navigation={navigation} active="Home" />
       </View>
@@ -588,6 +648,92 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  orderBoxWrapper: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  orderBox: {
+    backgroundColor: '#76CB4F',
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    position: 'relative',
+  },
+  orderBoxLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  orderBoxCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  orderBoxCircleText: {
+    color: '#76CB4F',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  orderBoxLabel: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  orderBoxRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  orderBoxPrice: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginLeft: 8,
+  },
+  orderBoxBadgeWrapper: {
+    position: 'absolute',
+    top: -16,
+    left: '50%',
+    transform: [{ translateX: -16 }],
+    zIndex: 2,
+  },
+  orderBoxBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#FF4D2E',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  orderBoxBadgeText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  skeletonProductCard: {
+    backgroundColor: '#eee',
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: '#E0E0E0',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: CARD_WIDTH,
+    marginBottom: 12,
+    minHeight: 280,
   },
 });
 

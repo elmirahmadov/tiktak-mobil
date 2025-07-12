@@ -110,7 +110,7 @@ const HomeScreen: React.FC<NavigationProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header navigation={navigation} />
       {isLoading ? (
         <ScrollView
           contentContainerStyle={styles.scrollContent}
