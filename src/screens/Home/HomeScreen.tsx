@@ -107,11 +107,12 @@ const HomeScreen: React.FC<NavigationProps> = ({ navigation }) => {
   );
 
   const isLoading = campaignsLoading || categoriesLoading;
+  const showSkeleton = isLoading && (!categories || categories.length === 0);
 
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
-      {isLoading ? (
+      {showSkeleton ? (
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
