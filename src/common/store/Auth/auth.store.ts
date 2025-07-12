@@ -233,11 +233,18 @@ export const useAuthStore = create<IAuthStore>()(
           set({ loading: true });
           try {
             const profile = await fetchProfile();
-
-            set({
-              user: profile,
-              isAuthenticated: true,
-              loading: false,
+            console.log('fetchProfile ile gelen:', profile);
+            set(state => {
+              const mergedUser = {
+                ...state.user,
+                ...profile,
+              };
+              console.log('getProfile sonrası user:', mergedUser);
+              return {
+                user: mergedUser,
+                isAuthenticated: true,
+                loading: false,
+              };
             });
           } catch (error) {
             await get().actions.logout();
@@ -251,10 +258,13 @@ export const useAuthStore = create<IAuthStore>()(
           try {
             const updatedProfile = await updateProfile(data);
 
-            set({
-              user: updatedProfile,
+            set(state => ({
+              user: {
+                ...state.user,
+                ...updatedProfile.data,
+              },
               loading: false,
-            });
+            }));
 
             Toast.show({
               type: 'success',
@@ -264,10 +274,18 @@ export const useAuthStore = create<IAuthStore>()(
 
             onSuccess?.();
           } catch (error) {
+            const err: any = error;
+            let errorMsg = err?.response?.data?.message;
+            if (Array.isArray(errorMsg)) errorMsg = errorMsg.join('\n');
+            console.error(
+              'Profil güncelleme hatası:',
+              err,
+              err?.response?.data,
+            );
             Toast.show({
               type: 'error',
               text1: 'Profil Güncelleme Hatası',
-              text2: 'Profil güncəllənərkən xəta baş verdi',
+              text2: errorMsg || 'Profil güncəllənərkən xəta baş verdi',
             });
             onError?.(error);
             set({ loading: false });

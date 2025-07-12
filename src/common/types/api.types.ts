@@ -25,6 +25,7 @@ export interface IRefreshTokenRequest {
 export interface IProfileUpdateRequest {
   full_name?: string;
   phone?: string;
+  address?: string;
 }
 
 export interface IAuthResponse {
