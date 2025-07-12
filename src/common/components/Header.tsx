@@ -1,17 +1,32 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useBasketStore } from '../store/Basket';
 
-const Header = () => {
+const Header = ({ navigation }: { navigation?: any }) => {
   const basketItems = useBasketStore(state => state.items);
+  const getBasket = useBasketStore(state => state.actions.getBasket);
+  const hasFetched = useRef(false);
+
   const totalCount = Array.isArray(basketItems)
     ? basketItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
     : 0;
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      getBasket();
+    }
+  }, [getBasket]);
+
   return (
     <View style={styles.header}>
       <Text style={styles.title}>TIK TAK</Text>
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() =>
+          navigation && navigation.navigate && navigation.navigate('Basket')
+        }
+      >
         <View style={{ position: 'relative' }}>
           <Feather name="shopping-cart" size={24} color="#222" />
           {totalCount > 0 && (

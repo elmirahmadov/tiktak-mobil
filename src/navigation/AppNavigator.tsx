@@ -6,6 +6,9 @@ import RegisterScreen from '../screens/Auth/RegisterScreen';
 import SplashScreen from '../screens/Auth/SplashScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
 import CategoryDetailScreen from '../screens/CategoryDetailScreen';
+import BasketScreen from '../screens/BasketScreen';
+import CheckoutScreen from '../screens/CheckoutScreen';
+import OrderSuccessScreen from '../screens/OrderSuccessScreen';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +24,9 @@ export default function AppNavigator() {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="CategoryDetail" component={CategoryDetailScreen} />
+        <Stack.Screen name="Basket" component={BasketScreen} />
+        <Stack.Screen name="Checkout" component={CheckoutScreen} />
+        <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
