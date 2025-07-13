@@ -25,14 +25,6 @@ const Header = ({ navigation }: { navigation?: any }) => {
       <View style={styles.headerActions}>
         <TouchableOpacity
           onPress={() =>
-            navigation && navigation.navigate && navigation.navigate('Search')
-          }
-          style={styles.actionButton}
-        >
-          <Feather name="search" size={24} color="#222" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
             navigation && navigation.navigate && navigation.navigate('Basket')
           }
           style={styles.actionButton}

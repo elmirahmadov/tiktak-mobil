@@ -8,6 +8,8 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import Header from '../common/components/Header';
 import Footer from '../common/components/Footer';
@@ -89,7 +91,11 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
       <Header navigation={navigation} />
       <View style={styles.searchContainer}>
         <TextInput
@@ -253,7 +259,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
           </View>
         )}
       </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
