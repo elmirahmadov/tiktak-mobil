@@ -8,6 +8,9 @@ export const API = {
   client: {
     profile: '/api/tiktak/profile',
   },
+  upload: {
+    image: '/api/tiktak/upload',
+  },
   products: {
     favorites: {
       post: (productId: number | string) =>

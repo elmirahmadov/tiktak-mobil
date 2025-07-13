@@ -5,6 +5,7 @@ export interface IUser {
   address?: string;
   adres?: string;
   location?: string;
+  img_url?: string;
 }
 
 export interface ILoginRequest {
@@ -26,6 +27,7 @@ export interface IProfileUpdateRequest {
   full_name?: string;
   phone?: string;
   address?: string;
+  img_url?: string;
 }
 
 export interface IAuthResponse {
