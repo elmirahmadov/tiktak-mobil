@@ -108,9 +108,6 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
         onBackdropPress={() => setSelectedOrderId(null)}
         onBackButtonPress={() => setSelectedOrderId(null)}
         style={styles.modal}
-        swipeDirection="down"
-        onSwipeComplete={() => setSelectedOrderId(null)}
-        propagateSwipe
       >
         <View style={styles.modalContent}>
           <View style={styles.modalHandle} />
@@ -128,7 +125,6 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
 
 const OrderDetailModal = ({
   orderId,
-  onClose,
 }: {
   orderId: number;
   onClose: () => void;
@@ -243,11 +239,12 @@ const OrderDetailModal = ({
     <View style={{ flex: 1 }}>
       <View style={styles.modalHeader}>
         <Text style={styles.modalTitle}>Sifariş Detayı</Text>
-        <TouchableOpacity onPress={onClose}>
-          <Feather name="x" size={24} color="#666" />
-        </TouchableOpacity>
       </View>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.summaryGridCustom}>
           {summaryRows.map((row, idx) => (
             <View key={idx} style={styles.summaryRowCustom}>
@@ -394,8 +391,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 0,
     minHeight: 420,
-    maxHeight: '98%',
-    overflow: 'hidden',
+    maxHeight: '90%',
   },
   modalHandle: {
     width: 48,
