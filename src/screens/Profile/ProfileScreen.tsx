@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { useAuthStore } from '../common/store/Auth';
-import { useUploadStore } from '../common/store/Upload';
+import { useAuthStore } from '../../common/store/Auth';
+import { useUploadStore } from '../../common/store/Upload';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Footer from '../common/components/Footer';
+import Footer from '../../common/components/Footer';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Toast from 'react-native-toast-message';
 

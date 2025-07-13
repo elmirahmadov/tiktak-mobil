@@ -5,15 +5,15 @@ import LoginScreen from '../screens/Auth/LoginScreen';
 import RegisterScreen from '../screens/Auth/RegisterScreen';
 import SplashScreen from '../screens/Auth/SplashScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
-import CategoryDetailScreen from '../screens/CategoryDetailScreen';
-import BasketScreen from '../screens/BasketScreen';
-import CheckoutScreen from '../screens/CheckoutScreen';
-import OrderSuccessScreen from '../screens/OrderSuccessScreen';
-import SearchScreen from '../screens/SearchScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import AccountInfoScreen from '../screens/AccountInfoScreen';
-import OrderHistoryScreen from '../screens/OrderHistoryScreen';
-import FavoriteScreen from '../screens/FavoriteScreen';
+import CategoryDetailScreen from '../screens/Category/CategoryDetailScreen';
+import BasketScreen from '../screens/Basket/BasketScreen';
+import CheckoutScreen from '../screens/Basket/CheckoutScreen';
+import OrderSuccessScreen from '../screens/Order/OrderSuccessScreen';
+import SearchScreen from '../screens/Search/SearchScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
+import AccountInfoScreen from '../screens/Profile/AccountInfoScreen';
+import OrderHistoryScreen from '../screens/Order/OrderHistoryScreen';
+import FavoriteScreen from '../screens/Favorite/FavoriteScreen';
 
 const Stack = createStackNavigator();
 

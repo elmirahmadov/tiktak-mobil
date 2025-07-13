@@ -11,13 +11,13 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import Header from '../common/components/Header';
-import Footer from '../common/components/Footer';
-import { useProductsStore } from '../common/store/Products';
+import Header from '../../common/components/Header';
+import Footer from '../../common/components/Footer';
+import { useProductsStore } from '../../common/store/Products';
 import Modal from 'react-native-modal';
 import Feather from 'react-native-vector-icons/Feather';
 
-const defaultProductImage = require('../images/image/splash.png');
+const defaultProductImage = require('../../images/image/splash.png');
 
 const SearchScreen = ({ navigation }: { navigation: any }) => {
   const allProducts = useProductsStore(state => state.products);
