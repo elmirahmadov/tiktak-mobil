@@ -19,7 +19,7 @@ const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
   const [name, setName] = useState(user?.full_name || '');
   const [address, setAddress] = useState(user?.address || '');
   const [phone, setPhone] = useState(user?.phone || '');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState((user as any)?.email || '');
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
   const actions = useAuthStore(state => state.actions);
@@ -35,6 +35,7 @@ const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
     const updateData: any = {
       full_name: name,
       phone,
+      email,
       address: address || user?.address || '',
     };
     if (password && passwordRepeat && password === passwordRepeat) {
