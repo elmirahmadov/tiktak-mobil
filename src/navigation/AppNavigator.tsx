@@ -12,6 +12,7 @@ import OrderSuccessScreen from '../screens/OrderSuccessScreen';
 import Search from '../screens/SearchScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import AccountInfoScreen from '../screens/AccountInfoScreen';
+import OrderHistoryScreen from '../screens/OrderHistoryScreen';
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
+        <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

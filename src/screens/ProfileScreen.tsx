@@ -106,7 +106,10 @@ const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
             />
             <Text style={styles.menuText}>Siyahılarım</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => _navigation.navigate('OrderHistory')}
+          >
             <Feather
               name="clock"
               size={22}
