@@ -15,8 +15,7 @@ export const API = {
     favorites: {
       post: (productId: number | string) =>
         `/api/tiktak/products/${productId}/favorite`,
-      get: (productId: number | string) =>
-        `/api/tiktak/products/${productId}/favorite`,
+      get: `/api/tiktak/products/favorites`,
     },
     basket: {
       get: '/api/tiktak/basket',

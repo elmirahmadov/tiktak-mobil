@@ -97,7 +97,10 @@ const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
             />
             <Text style={styles.menuText}>Hesab məlumatlarım</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => _navigation.navigate('Favorite')}
+          >
             <Feather
               name="heart"
               size={22}

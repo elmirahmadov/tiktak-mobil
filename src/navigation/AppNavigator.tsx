@@ -9,10 +9,11 @@ import CategoryDetailScreen from '../screens/CategoryDetailScreen';
 import BasketScreen from '../screens/BasketScreen';
 import CheckoutScreen from '../screens/CheckoutScreen';
 import OrderSuccessScreen from '../screens/OrderSuccessScreen';
-import Search from '../screens/SearchScreen';
+import SearchScreen from '../screens/SearchScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import AccountInfoScreen from '../screens/AccountInfoScreen';
 import OrderHistoryScreen from '../screens/OrderHistoryScreen';
+import FavoriteScreen from '../screens/FavoriteScreen';
 
 const Stack = createStackNavigator();
 
@@ -31,10 +32,11 @@ export default function AppNavigator() {
         <Stack.Screen name="Basket" component={BasketScreen} />
         <Stack.Screen name="Checkout" component={CheckoutScreen} />
         <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
-        <Stack.Screen name="Search" component={Search} />
+        <Stack.Screen name="Search" component={SearchScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
         <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
+        <Stack.Screen name="Favorite" component={FavoriteScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
