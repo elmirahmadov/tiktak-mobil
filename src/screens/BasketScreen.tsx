@@ -146,7 +146,12 @@ const BasketScreen: React.FC<BasketScreenProps> = ({ navigation }) => {
           </View>
           <TouchableOpacity
             style={styles.orderBtn}
-            onPress={() => navigation.navigate('Checkout')}
+            onPress={() => {
+              navigation.navigate('Checkout');
+              setTimeout(() => {
+                navigation.navigate('OrderHistory');
+              }, 3000);
+            }}
           >
             <Text style={styles.orderBtnText}>Sifarişi tamamla</Text>
           </TouchableOpacity>

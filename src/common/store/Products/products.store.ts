@@ -7,7 +7,7 @@ import {
   getProducts as fetchProducts,
   getProductDetail as fetchProductDetail,
   toggleFavorite as toggleFavoriteApi,
-  getFavoriteStatus as getFavoriteStatusApi,
+  getFavorites as fetchFavorites,
 } from '../../services/api/products.api';
 
 type ErrorResponse = {
@@ -117,15 +117,6 @@ export const useProductsStore = create<IProductsStore>()(
           try {
             const res = await toggleFavoriteApi(productId);
 
-            const currentState = get();
-            const newFavorites = res.is_favorite
-              ? [...currentState.favorites, Number(productId)]
-              : currentState.favorites.filter(id => id !== Number(productId));
-
-            set({
-              favorites: newFavorites,
-            });
-
             Toast.show({
               type: res.is_favorite ? 'success' : 'info',
               text1: res.is_favorite
@@ -133,6 +124,8 @@ export const useProductsStore = create<IProductsStore>()(
                 : 'Favorilerden Çıkarıldı',
               text2: res.message,
             });
+
+            await get().actions.getFavorites();
 
             onSuccess?.();
           } catch (error) {
@@ -150,20 +143,14 @@ export const useProductsStore = create<IProductsStore>()(
           }
         },
 
-        getFavoriteStatus: async (productId, onSuccess, onError) => {
+        getFavorites: async (onSuccess?: any, onError?: any) => {
           try {
-            const res = await getFavoriteStatusApi(productId);
-
-            const currentState = get();
-            const newFavorites = res.is_favorite
-              ? [...currentState.favorites, Number(productId)]
-              : currentState.favorites.filter(id => id !== Number(productId));
-
-            set({
-              favorites: newFavorites,
-            });
-
-            onSuccess?.();
+            const data = await fetchFavorites();
+            const favoriteIds = Array.isArray(data)
+              ? data.map((p: any) => p.id)
+              : [];
+            set({ favorites: favoriteIds });
+            onSuccess?.(data);
           } catch (error) {
             onError?.(error);
           }

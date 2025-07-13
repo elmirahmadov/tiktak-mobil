@@ -17,6 +17,7 @@ import { useProductsStore } from '../common/store/Products';
 import { useBasketStore } from '../common/store/Basket';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal from 'react-native-modal';
 
 const defaultProductImage = require('../images/image/splash.png');
@@ -42,6 +43,10 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
   const productsLoading = useProductsStore(state => state.loading);
   const getProducts = useProductsStore(state => state.actions.getProducts);
   const resetProducts = useProductsStore(state => state.actions.reset);
+  const favorites = useProductsStore(state => state.favorites);
+  const toggleFavorite = useProductsStore(
+    state => state.actions.toggleFavorite,
+  );
 
   const basketItemsRaw = useBasketStore(state => state.items);
   const basketItems = React.useMemo(
@@ -64,6 +69,10 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
   const closeModal = () => {
     setModalVisible(false);
     setSelectedProduct(null);
+  };
+
+  const isFavorite = (product: any) => {
+    return favorites.includes(product.id);
   };
 
   useEffect(() => {
@@ -286,7 +295,10 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
             keyExtractor={item => String(item.id)}
             numColumns={2}
             renderItem={renderProductCard}
-            contentContainerStyle={styles.productsGrid}
+            contentContainerStyle={[
+              styles.productsGrid,
+              { paddingBottom: 110 },
+            ]}
             columnWrapperStyle={styles.productRow}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
@@ -330,25 +342,27 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
       </View>
 
       {basketCount > 0 && (
-        <TouchableOpacity
-          style={styles.orderBoxWrapper}
-          activeOpacity={0.85}
-          onPress={() => navigation.navigate('Basket')}
-        >
-          <View style={styles.orderBox}>
-            <View style={styles.orderBoxLeft}>
-              <View style={styles.orderBoxCircle}>
-                <Text style={styles.orderBoxCircleText}>{basketCount}</Text>
+        <View style={styles.absoluteOrderBoxWrapper} pointerEvents="box-none">
+          <TouchableOpacity
+            style={styles.orderBoxWrapper}
+            activeOpacity={0.85}
+            onPress={() => navigation.navigate('Basket')}
+          >
+            <View style={styles.orderBox}>
+              <View style={styles.orderBoxLeft}>
+                <View style={styles.orderBoxCircle}>
+                  <Text style={styles.orderBoxCircleText}>{basketCount}</Text>
+                </View>
+                <Text style={styles.orderBoxLabel}>Sifarişlər</Text>
               </View>
-              <Text style={styles.orderBoxLabel}>Sifarişlər</Text>
+              <View style={styles.orderBoxRight}>
+                <Text style={styles.orderBoxPrice}>
+                  ₼ {basketTotal.toFixed(2)}
+                </Text>
+              </View>
             </View>
-            <View style={styles.orderBoxRight}>
-              <Text style={styles.orderBoxPrice}>
-                ₼ {basketTotal.toFixed(2)}
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
       )}
       <View style={{ backgroundColor: '#fff' }}>
         <Footer navigation={navigation} active="Home" />
@@ -393,8 +407,13 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
                 zIndex: 2,
               }}
               activeOpacity={0.7}
+              onPress={() => toggleFavorite(selectedProduct.id)}
             >
-              <Feather name="heart" size={28} color="#BDBDBD" />
+              {isFavorite(selectedProduct) ? (
+                <AntDesign name="heart" size={28} color="#F44336" />
+              ) : (
+                <AntDesign name="hearto" size={28} color="#BDBDBD" />
+              )}
             </TouchableOpacity>
             <Image
               source={
@@ -487,7 +506,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#76CB4F',
-    borderRadius: 12,
+    borderRadius: 16,
     marginHorizontal: 16,
     marginTop: 16,
     marginBottom: 10,
@@ -511,12 +530,12 @@ const styles = StyleSheet.create({
   },
   categoryScrollContent: {
     alignItems: 'center',
-    paddingRight: 8,
+    paddingRight: 0,
     paddingLeft: 0,
   },
   categoryPill: {
     backgroundColor: '#F3F3F3',
-    borderRadius: 12,
+    borderRadius: 16,
     paddingHorizontal: 22,
     paddingVertical: 10,
     marginRight: 10,
@@ -684,9 +703,19 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   orderBoxWrapper: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 16,
+    width: '90%',
+    alignSelf: 'center',
+    marginHorizontal: 0,
+    marginTop: 0,
+    marginBottom: 0,
+  },
+  absoluteOrderBoxWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 70,
+    zIndex: 20,
+    alignItems: 'center',
   },
   orderBox: {
     backgroundColor: '#76CB4F',

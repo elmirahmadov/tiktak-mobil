@@ -22,9 +22,8 @@ export interface IProductsStoreActions {
     onError?: (err: any) => void,
   ) => Promise<void>;
 
-  getFavoriteStatus: (
-    productId: number | string,
-    onSuccess?: () => void,
+  getFavorites: (
+    onSuccess?: (data?: any) => void,
     onError?: (err: any) => void,
   ) => Promise<void>;
 }

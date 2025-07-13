@@ -39,12 +39,10 @@ export const toggleFavorite = async (
   return response.data;
 };
 
-export const getFavoriteStatus = async (
-  productId: number | string,
-): Promise<IFavoriteResponse> => {
+export const getFavorites = async () => {
   const response = await Fetcher({
     method: REQUEST_METHODS.GET,
-    url: API.products.favorites.get(productId),
+    url: '/api/tiktak/products/favorites',
   });
-  return response.data;
+  return response.data.data;
 };
