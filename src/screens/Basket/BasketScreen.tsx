@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useBasketStore } from '../common/store/Basket';
+import { useBasketStore } from '../../common/store/Basket';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 export type BasketItem = {
@@ -28,7 +28,7 @@ export type BasketScreenProps = {
   navigation: StackNavigationProp<any>;
 };
 
-const defaultProductImage = require('../images/image/splash.png');
+const defaultProductImage = require('../../images/image/splash.png');
 
 const BasketScreen: React.FC<BasketScreenProps> = ({ navigation }) => {
   const basketItems = useBasketStore(state => state.items) || [];

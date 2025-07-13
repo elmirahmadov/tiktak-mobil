@@ -11,9 +11,9 @@ import {
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Modal from 'react-native-modal';
-import Footer from '../common/components/Footer';
-import { getOrders } from '../common/services/api/order.api';
-import { getOrderDetail } from '../common/services/api/order.api';
+import Footer from '../../common/components/Footer';
+import { getOrders } from '../../common/services/api/order.api';
+import { getOrderDetail } from '../../common/services/api/order.api';
 
 const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
   const [orders, setOrders] = useState<any[]>([]);

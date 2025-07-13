@@ -9,10 +9,10 @@ import {
   ScrollView,
   Platform,
 } from 'react-native';
-import { useAuthStore } from '../common/store/Auth';
+import { useAuthStore } from '../../common/store/Auth';
 import Toast from 'react-native-toast-message';
 import Feather from 'react-native-vector-icons/Feather';
-import Footer from '../common/components/Footer';
+import Footer from '../../common/components/Footer';
 
 const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
   const user = useAuthStore(state => state.user);

@@ -12,10 +12,10 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal from 'react-native-modal';
-import { useProductsStore } from '../common/store/Products';
-import { useBasketStore } from '../common/store/Basket';
+import { useProductsStore } from '../../common/store/Products';
+import { useBasketStore } from '../../common/store/Basket';
 
-const defaultProductImage = require('../images/image/splash.png');
+const defaultProductImage = require('../../images/image/splash.png');
 const CARD_GAP = 12;
 const CARD_HORIZONTAL_PADDING = 16;
 const CARD_WIDTH =

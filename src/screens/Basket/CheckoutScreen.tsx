@@ -12,9 +12,9 @@ import {
   Platform,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import { useBasketStore } from '../common/store/Basket';
-import { useAuthStore } from '../common/store/Auth/auth.store';
-import { checkout as orderCheckout } from '../common/services/api/order.api';
+import { useBasketStore } from '../../common/store/Basket';
+import { useAuthStore } from '../../common/store/Auth/auth.store';
+import { checkout as orderCheckout } from '../../common/services/api/order.api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CheckoutScreen = ({ navigation }: { navigation: any }) => {

@@ -10,17 +10,17 @@ import {
   Dimensions,
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import Header from '../common/components/Header';
-import Footer from '../common/components/Footer';
-import { useCategoriesStore } from '../common/store/Categories';
-import { useProductsStore } from '../common/store/Products';
-import { useBasketStore } from '../common/store/Basket';
+import Header from '../../common/components/Header';
+import Footer from '../../common/components/Footer';
+import { useCategoriesStore } from '../../common/store/Categories';
+import { useProductsStore } from '../../common/store/Products';
+import { useBasketStore } from '../../common/store/Basket';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal from 'react-native-modal';
 
-const defaultProductImage = require('../images/image/splash.png');
+const defaultProductImage = require('../../images/image/splash.png');
 
 const CARD_HORIZONTAL_PADDING = 16;
 const CARD_GAP = 12;
