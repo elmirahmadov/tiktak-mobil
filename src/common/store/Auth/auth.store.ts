@@ -256,7 +256,9 @@ export const useAuthStore = create<IAuthStore>()(
         updateProfile: async (data, onSuccess, onError) => {
           set({ loading: true });
           try {
+            console.log('updateProfile called with data:', data);
             const updatedProfile = await updateProfile(data);
+            console.log('updateProfile response:', updatedProfile);
 
             set(state => ({
               user: {
@@ -281,6 +283,12 @@ export const useAuthStore = create<IAuthStore>()(
               'Profil güncelleme hatası:',
               err,
               err?.response?.data,
+            );
+            console.error('Full error response:', err?.response);
+            console.error('Error response data:', err?.response?.data);
+            console.error(
+              'Error response message:',
+              err?.response?.data?.message,
             );
             Toast.show({
               type: 'error',

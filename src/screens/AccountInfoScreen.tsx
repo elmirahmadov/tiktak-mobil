@@ -55,7 +55,6 @@ const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.headerRow}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -66,7 +65,7 @@ const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
         <Text style={styles.headerTitle}>Hesab</Text>
         <View style={{ width: 24 }} />
       </View>
-      {/* Form */}
+
       <View style={styles.formWrapper}>
         <Text style={styles.label}>Ad Soyad</Text>
         <TextInput

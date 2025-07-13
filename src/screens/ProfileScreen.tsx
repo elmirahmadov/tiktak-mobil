@@ -1,24 +1,86 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useAuthStore } from '../common/store/Auth';
+import { useUploadStore } from '../common/store/Upload';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Footer from '../common/components/Footer';
+import { launchImageLibrary } from 'react-native-image-picker';
+import Toast from 'react-native-toast-message';
 
 const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
   const user = useAuthStore(state => state.user);
   const name = user?.full_name;
   const phone = user?.phone;
   const actions = useAuthStore(state => state.actions);
+  const { uploadImage, isLoading: uploadLoading } = useUploadStore();
+
+  const handleAvatarPress = async () => {
+    try {
+      const result = await launchImageLibrary({ mediaType: 'photo' });
+      console.log('Image picker result:', result);
+      if (result.assets && result.assets.length > 0) {
+        const photo = result.assets[0];
+        console.log('Selected photo:', photo);
+
+        const img_url = await uploadImage({
+          uri: photo.uri || '',
+          type: photo.type || 'image/jpeg',
+          name: photo.fileName || 'image.jpg',
+        });
+
+        console.log('Uploaded img_url:', img_url);
+        if (!img_url) throw new Error('Resim yüklenemedi');
+
+        await actions.updateProfile(
+          {
+            img_url,
+            full_name: user?.full_name || '',
+            address: user?.address || '',
+          },
+          async () => {
+            await actions.getProfile();
+            Toast.show({
+              type: 'success',
+              text1: 'Profil fotoğrafı yeniləndi',
+            });
+          },
+          err => {
+            console.error('updateProfile error:', err);
+            Toast.show({
+              type: 'error',
+              text1: 'Profil fotoğrafı güncellenemedi',
+            });
+          },
+        );
+      }
+    } catch (e) {
+      console.error('handleAvatarPress error:', e);
+      Toast.show({ type: 'error', text1: 'Resim yüklenemedi' });
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.header}>Hesabım</Text>
         <View style={styles.avatarWrapper}>
-          <View style={styles.avatarCircle}>
-            <Feather name="user" size={80} color="#fff" />
-          </View>
+          <TouchableOpacity
+            onPress={handleAvatarPress}
+            disabled={uploadLoading}
+            activeOpacity={0.7}
+          >
+            <View style={styles.avatarCircle}>
+              {user?.img_url ? (
+                <Image
+                  source={{ uri: user.img_url }}
+                  style={{ width: 120, height: 120, borderRadius: 60 }}
+                />
+              ) : (
+                <Feather name="user" size={80} color="#fff" />
+              )}
+            </View>
+          </TouchableOpacity>
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.phone}>{phone}</Text>
         </View>

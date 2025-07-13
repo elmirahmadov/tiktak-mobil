@@ -15,3 +15,6 @@ export * from './Categories';
 
 // Campaigns Store
 export * from './Campaigns';
+
+// Upload Store
+export * from './Upload';
