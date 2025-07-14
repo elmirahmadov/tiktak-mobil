@@ -54,6 +54,9 @@ export default function LoginScreen({ navigation, route }: any) {
         value={phone}
         onChangeText={handlePhoneChange}
         keyboardType="phone-pad"
+        onFocus={() => {
+          if (!phone) setPhone('(+994) ');
+        }}
       />
       <View style={styles.inputWrapper}>
         <TextInput
