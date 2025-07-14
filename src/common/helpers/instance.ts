@@ -37,7 +37,12 @@ export const setNavigationRef = (ref: any) => {
 instance.interceptors.response.use(
   response => response,
   async error => {
-    if (error.response && error.response.status === 401) {
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      error.config &&
+      error.config.url !== '/api/tiktak/auth/login'
+    ) {
       try {
         const { actions } = useAuthStore.getState();
         await actions.logout();

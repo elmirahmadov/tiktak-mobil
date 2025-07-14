@@ -78,8 +78,8 @@ export const useProductsStore = create<IProductsStore>()(
 
             Toast.show({
               type: 'error',
-              text1: 'Ürünler Yüklenemedi',
-              text2: errorMessage || 'Bir hata oluştu',
+              text1: 'Məhsullar Yüklənmədi',
+              text2: errorMessage || 'Bir xəta baş verdi',
             });
             onError?.(error);
             set({ loading: false });
@@ -105,8 +105,8 @@ export const useProductsStore = create<IProductsStore>()(
 
             Toast.show({
               type: 'error',
-              text1: 'Ürün Detayı Yüklenemedi',
-              text2: errorMessage || 'Bir hata oluştu',
+              text1: 'Məhsul Detalı Yüklənmədi',
+              text2: errorMessage || 'Bir xəta baş verdi',
             });
             onError?.(error);
             set({ loading: false });
@@ -115,17 +115,20 @@ export const useProductsStore = create<IProductsStore>()(
 
         toggleFavorite: async (productId, onSuccess, onError) => {
           try {
-            const res = await toggleFavoriteApi(productId);
+            await toggleFavoriteApi(productId);
+            await get().actions.getFavorites();
+
+            // Favoriler güncellendikten sonra state'ten kontrol et
+            const favorites = get().favorites;
+            const isNowFavorite = favorites.includes(Number(productId));
 
             Toast.show({
-              type: res.is_favorite ? 'success' : 'info',
-              text1: res.is_favorite
-                ? 'Favorilere Eklendi'
-                : 'Favorilerden Çıkarıldı',
-              text2: res.message,
+              type: isNowFavorite ? 'success' : 'info',
+              text1: isNowFavorite
+                ? 'Favoritlərə əlavə edildi'
+                : 'Favoritlərdən çıxarıldı',
+              text2: undefined,
             });
-
-            await get().actions.getFavorites();
 
             onSuccess?.();
           } catch (error) {
@@ -136,8 +139,8 @@ export const useProductsStore = create<IProductsStore>()(
 
             Toast.show({
               type: 'error',
-              text1: 'Favori İşlemi Başarısız',
-              text2: errorMessage || 'Bir hata oluştu',
+              text1: 'Favori Əməliyyatı Uğursuz Oldu',
+              text2: errorMessage || 'Bir xəta baş verdi',
             });
             onError?.(error);
           }

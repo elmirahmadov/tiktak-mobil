@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Toast from 'react-native-toast-message';
 import type { IOrdersStore } from './orders.types';
 import {
   getOrders as fetchOrders,
   getOrderDetail as fetchOrderDetail,
   checkout as checkoutApi,
 } from '../../services/api/order.api';
+import Toast from 'react-native-toast-message';
 
 type ErrorResponse = {
   response?: {
@@ -69,8 +69,8 @@ export const useOrdersStore = create<IOrdersStore>()(
 
             Toast.show({
               type: 'error',
-              text1: 'Siparişler Yüklenemedi',
-              text2: errorMessage || 'Bir hata oluştu',
+              text1: 'Sifarişlər Yüklənmədi',
+              text2: errorMessage || 'Bir xəta baş verdi',
             });
             onError?.(error);
             set({ loading: false });
@@ -96,8 +96,8 @@ export const useOrdersStore = create<IOrdersStore>()(
 
             Toast.show({
               type: 'error',
-              text1: 'Sipariş Detayı Yüklenemedi',
-              text2: errorMessage || 'Bir hata oluştu',
+              text1: 'Sifariş Detalı Yüklənmədi',
+              text2: errorMessage || 'Bir xəta baş verdi',
             });
             onError?.(error);
             set({ loading: false });
@@ -107,14 +107,7 @@ export const useOrdersStore = create<IOrdersStore>()(
         checkout: async (data, onSuccess, onError) => {
           set({ loading: true });
           try {
-            const res = await checkoutApi(data);
-
-            Toast.show({
-              type: 'success',
-              text1: 'Sipariş Başarılı',
-              text2: res.message || 'Siparişiniz başarıyla oluşturuldu',
-            });
-
+            await checkoutApi(data);
             set({ loading: false });
             onSuccess?.();
           } catch (error) {
@@ -125,8 +118,8 @@ export const useOrdersStore = create<IOrdersStore>()(
 
             Toast.show({
               type: 'error',
-              text1: 'Sipariş Başarısız',
-              text2: errorMessage || 'Bir hata oluştu',
+              text1: 'Sifariş Uğursuz Oldu',
+              text2: errorMessage || 'Bir xəta baş verdi',
             });
             onError?.(error);
             set({ loading: false });

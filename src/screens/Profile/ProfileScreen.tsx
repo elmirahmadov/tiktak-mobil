@@ -6,7 +6,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Footer from '../../common/components/Footer';
 import { launchImageLibrary } from 'react-native-image-picker';
-import Toast from 'react-native-toast-message';
 
 const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
   const user = useAuthStore(state => state.user);
@@ -18,10 +17,8 @@ const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
   const handleAvatarPress = async () => {
     try {
       const result = await launchImageLibrary({ mediaType: 'photo' });
-      console.log('Image picker result:', result);
       if (result.assets && result.assets.length > 0) {
         const photo = result.assets[0];
-        console.log('Selected photo:', photo);
 
         const img_url = await uploadImage({
           uri: photo.uri || '',
@@ -29,7 +26,6 @@ const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
           name: photo.fileName || 'image.jpg',
         });
 
-        console.log('Uploaded img_url:', img_url);
         if (!img_url) throw new Error('Resim yüklenemedi');
 
         await actions.updateProfile(
@@ -40,23 +36,14 @@ const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
           },
           async () => {
             await actions.getProfile();
-            Toast.show({
-              type: 'success',
-              text1: 'Profil fotoğrafı yeniləndi',
-            });
           },
           err => {
             console.error('updateProfile error:', err);
-            Toast.show({
-              type: 'error',
-              text1: 'Profil fotoğrafı güncellenemedi',
-            });
           },
         );
       }
     } catch (e) {
       console.error('handleAvatarPress error:', e);
-      Toast.show({ type: 'error', text1: 'Resim yüklenemedi' });
     }
   };
 

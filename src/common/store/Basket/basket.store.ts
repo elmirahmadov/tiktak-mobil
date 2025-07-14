@@ -61,8 +61,8 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
 
         Toast.show({
           type: 'error',
-          text1: 'Sepet Yüklenemedi',
-          text2: errorMessage || 'Bir hata oluştu',
+          text1: 'Səbət Yüklənmədi',
+          text2: errorMessage || 'Bir xəta baş verdi',
         });
         onError?.(error);
         set({ loading: false });
@@ -72,9 +72,7 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
     addToBasket: async (productId, data, onSuccess, onError) => {
       set({ loading: true });
       try {
-        console.log('[BasketStore] addToBasket çağrıldı:', productId, data);
         const res = await addToBasketApi(productId, data);
-        console.log('[BasketStore] API response:', res);
 
         const basketData = (res.data as any) || {};
         set({
@@ -83,22 +81,9 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
           totalPrice: parseFloat(basketData.total) || 0,
           loading: false,
         });
-        console.log('[BasketStore] Yeni state:', {
-          items: basketData.items || [],
-          totalItems: basketData.count || 0,
-          totalPrice: parseFloat(basketData.total) || 0,
-          loading: false,
-        });
-
-        Toast.show({
-          type: 'success',
-          text1: 'Sepete Eklendi',
-          text2: 'Ürün başarıyla sepete eklendi',
-        });
 
         onSuccess?.();
       } catch (error) {
-        console.log('[BasketStore] HATA:', error);
         const errorResponse = error as ErrorResponse;
         const errorMessage = parseErrorMessage(
           errorResponse?.response?.data?.message,
@@ -106,8 +91,8 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
 
         Toast.show({
           type: 'error',
-          text1: 'Sepete Eklenemedi',
-          text2: errorMessage || 'Bir hata oluştu',
+          text1: 'Səbətə Əlavə Olunmadı',
+          text2: errorMessage || 'Bir xəta baş verdi',
         });
         onError?.(error);
         set({ loading: false });
@@ -127,12 +112,6 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
           loading: false,
         });
 
-        Toast.show({
-          type: 'success',
-          text1: 'Sepetten Çıkarıldı',
-          text2: 'Ürün sepetten çıkarıldı',
-        });
-
         onSuccess?.();
       } catch (error) {
         const errorResponse = error as ErrorResponse;
@@ -142,8 +121,8 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
 
         Toast.show({
           type: 'error',
-          text1: 'Çıkarma İşlemi Başarısız',
-          text2: errorMessage || 'Bir hata oluştu',
+          text1: 'Çıxarma Əməliyyatı Uğursuz Oldu',
+          text2: errorMessage || 'Bir xəta baş verdi',
         });
         onError?.(error);
         set({ loading: false });
@@ -162,12 +141,6 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
           loading: false,
         });
 
-        Toast.show({
-          type: 'success',
-          text1: 'Sepet Temizlendi',
-          text2: 'Sepet başarıyla temizlendi',
-        });
-
         onSuccess?.();
       } catch (error) {
         const errorResponse = error as ErrorResponse;
@@ -177,8 +150,8 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
 
         Toast.show({
           type: 'error',
-          text1: 'Sepet Temizlenemedi',
-          text2: errorMessage || 'Bir hata oluştu',
+          text1: 'Səbət Təmizlənmədi',
+          text2: errorMessage || 'Bir xəta baş verdi',
         });
         onError?.(error);
         set({ loading: false });
@@ -197,12 +170,6 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
           loading: false,
         });
 
-        Toast.show({
-          type: 'success',
-          text1: 'Tüm Ürünler Çıkarıldı',
-          text2: 'Tüm ürünler sepetten çıkarıldı',
-        });
-
         onSuccess?.();
       } catch (error) {
         const errorResponse = error as ErrorResponse;
@@ -212,8 +179,8 @@ export const useBasketStore = create<IBasketStore>()((set, _get) => ({
 
         Toast.show({
           type: 'error',
-          text1: 'Çıkarma İşlemi Başarısız',
-          text2: errorMessage || 'Bir hata oluştu',
+          text1: 'Çıxarma Əməliyyatı Uğursuz Oldu',
+          text2: errorMessage || 'Bir xəta baş verdi',
         });
         onError?.(error);
         set({ loading: false });

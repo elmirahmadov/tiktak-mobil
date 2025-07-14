@@ -97,9 +97,7 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
     );
   }, [allProducts, selectedCategory]);
 
-  React.useEffect(() => {
-    console.log('[BasketItems] Güncel sepet:', basketItems);
-  }, [basketItems]);
+  React.useEffect(() => {}, [basketItems]);
 
   const getProductQuantity = useCallback(
     (productId: any) => {
@@ -124,7 +122,6 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
 
   const handleAddToBasket = useCallback(
     (product: any) => {
-      console.log('[AddToBasket] Ürün ekleniyor:', product);
       addToBasket(product.id, { product_id: product.id, quantity: 1 });
     },
     [addToBasket],
@@ -132,7 +129,6 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
 
   const handleRemoveFromBasket = useCallback(
     (product: any) => {
-      console.log('[RemoveFromBasket] Ürün çıkarılıyor:', product);
       removeFromBasket({ product_id: product.id });
     },
     [removeFromBasket],
