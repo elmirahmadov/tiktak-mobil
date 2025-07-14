@@ -47,6 +47,7 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
   const toggleFavorite = useProductsStore(
     state => state.actions.toggleFavorite,
   );
+  const getFavorites = useProductsStore(state => state.actions.getFavorites);
 
   const basketItemsRaw = useBasketStore(state => state.items);
   const basketItems = React.useMemo(
@@ -79,7 +80,8 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
     getCategories();
     resetProducts();
     getProducts();
-  }, [getCategories, getProducts, resetProducts]);
+    getFavorites();
+  }, [getCategories, getProducts, resetProducts, getFavorites]);
 
   useEffect(() => {
     if (initialCategory) setSelectedCategory(initialCategory);
@@ -405,11 +407,11 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
               activeOpacity={0.7}
               onPress={() => toggleFavorite(selectedProduct.id)}
             >
-              {isFavorite(selectedProduct) ? (
-                <AntDesign name="heart" size={28} color="#F44336" />
-              ) : (
-                <AntDesign name="hearto" size={28} color="#BDBDBD" />
-              )}
+              <AntDesign
+                name="hearto"
+                size={28}
+                color={isFavorite(selectedProduct) ? '#F44336' : '#BDBDBD'}
+              />
             </TouchableOpacity>
             <Image
               source={

@@ -15,7 +15,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import { useBasketStore } from '../../common/store/Basket';
 import { useAuthStore } from '../../common/store/Auth/auth.store';
 import { checkout as orderCheckout } from '../../common/services/api/order.api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CheckoutScreen = ({ navigation }: { navigation: any }) => {
   const basketItems = useBasketStore(state => state.items) || [];
@@ -23,7 +22,6 @@ const CheckoutScreen = ({ navigation }: { navigation: any }) => {
   const user: Record<string, any> = useAuthStore(state => state.user) || {};
   const [note, setNote] = useState('');
   const [payment, setPayment] = useState('cash');
-  const actions = useBasketStore(state => state.actions);
 
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.summaryRow}>
@@ -51,8 +49,6 @@ const CheckoutScreen = ({ navigation }: { navigation: any }) => {
         return;
       }
       await orderCheckout(payload as any);
-      actions.reset();
-      await AsyncStorage.removeItem('basket-store');
 
       navigation.replace('OrderSuccess');
     } catch (e: any) {

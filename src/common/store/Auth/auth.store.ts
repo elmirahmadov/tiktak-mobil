@@ -59,19 +59,14 @@ export const useAuthStore = create<IAuthStore>()(
               refresh_token = res.refresh_token;
               profile = res.profile || res.user;
             } else if (res?.data?.tokens) {
-              console.log('📦 AUTH STORE: Token tipi - res.data.tokens içinde');
               access_token = res.data.tokens.access_token;
               refresh_token = res.data.tokens.refresh_token;
               profile = res.data.profile || res.data.user;
             } else if (res?.data?.access_token) {
-              console.log(
-                '📦 AUTH STORE: Token tipi - res.data içinde doğrudan',
-              );
               access_token = res.data.access_token;
               refresh_token = res.data.refresh_token;
               profile = res.data.profile || res.data.user;
             } else if (res?.tokens) {
-              console.log('📦 AUTH STORE: Token tipi - res.tokens içinde');
               access_token = res.tokens.access_token;
               refresh_token = res.tokens.refresh_token;
               profile = res.profile || res.user;
@@ -82,9 +77,6 @@ export const useAuthStore = create<IAuthStore>()(
               throw new Error("API'den token alınamadı");
             }
 
-            console.log('🔐 AUTH STORE: Tokenlar alındı');
-            console.log('👤 AUTH STORE: Kullanıcı profili:', profile);
-
             set({
               accessToken: access_token,
               refreshToken: refresh_token,
@@ -93,13 +85,9 @@ export const useAuthStore = create<IAuthStore>()(
               loading: false,
             });
 
-            console.log('💾 AUTH STORE: Store güncellendi');
             onSuccess?.();
-            console.log('🎉 AUTH STORE: Login işlemi tamamlandı');
           } catch (error) {
-            console.error('❌ AUTH STORE: Login hatası:', error);
             try {
-              // Hata yanıtını güvenli kontrol et
               let errorResponse: any = {};
               if (
                 typeof error === 'object' &&
@@ -113,13 +101,11 @@ export const useAuthStore = create<IAuthStore>()(
                   typeof errResp === 'object' &&
                   'data' in errResp
                 ) {
-                  console.error('📋 AUTH STORE: Hata yanıtı:', errResp.data);
                 }
               }
               const rawMessage = parseErrorMessage(
                 errorResponse?.response?.data?.message,
               );
-              console.log('📝 AUTH STORE: Ham hata mesajı:', rawMessage);
 
               const getErrorMessage = (errorMsg: string) => {
                 if (!errorMsg) return 'Bilinmeyen hata';
@@ -143,40 +129,21 @@ export const useAuthStore = create<IAuthStore>()(
               };
 
               const errorMessage = getErrorMessage(rawMessage);
-              console.log(
-                '🗣️ AUTH STORE: Kullanıcıya gösterilecek hata mesajı:',
-                errorMessage,
-              );
 
               Toast.show({
                 type: 'error',
                 text1: 'Giriş Xətası',
                 text2: errorMessage,
               });
-              console.log('🔔 AUTH STORE: Toast bildirimi gösterildi');
 
               try {
                 if (onError) {
-                  console.log('📞 AUTH STORE: onError callback çağrılıyor');
                   onError(error);
-                  console.log('✓ AUTH STORE: onError callback tamamlandı');
                 }
-              } catch (callbackError) {
-                console.error(
-                  '⚠️ AUTH STORE: onError callback hatası:',
-                  callbackError,
-                );
-              }
+              } catch (callbackError) {}
             } catch (errorHandlingError) {
-              console.error(
-                '⚠️ AUTH STORE: Hata işleme sırasında başka bir hata oluştu:',
-                errorHandlingError,
-              );
             } finally {
-              // Her durumda loading'i false yap
-              console.log('🔄 AUTH STORE: Loading durumu false yapılıyor');
               set({ loading: false });
-              console.log('✓ AUTH STORE: Loading durumu false yapıldı');
             }
           }
         },
