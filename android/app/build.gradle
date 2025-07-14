@@ -90,9 +90,9 @@ android {
     signingConfigs {
         release {
             storeFile file('my-release-key.keystore')
-            storePassword '123456'
+            storePassword 'tiktak123'
             keyAlias 'my-key-alias'
-            keyPassword '123456'
+            keyPassword 'tiktak123'
         }
     }
     buildTypes {
