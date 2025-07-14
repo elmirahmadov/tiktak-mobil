@@ -10,7 +10,6 @@ import {
   Platform,
 } from 'react-native';
 import { useAuthStore } from '../../common/store/Auth';
-import Toast from 'react-native-toast-message';
 import Feather from 'react-native-vector-icons/Feather';
 import Footer from '../../common/components/Footer';
 
@@ -28,7 +27,6 @@ const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
   const handleSave = async () => {
     setLoading(true);
     if ((password || passwordRepeat) && password !== passwordRepeat) {
-      Toast.show({ type: 'error', text1: 'Şifrələr eyni deyil!' });
       setLoading(false);
       return;
     }
@@ -41,17 +39,14 @@ const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
     if (password && passwordRepeat && password === passwordRepeat) {
       updateData.password = password;
     }
-    console.log('Profil update gönderilen veri:', updateData);
     actions.updateProfile(
       updateData,
       async () => {
         await actions.getProfile();
-        Toast.show({ type: 'success', text1: 'Profil yeniləndi' });
         navigation.navigate('Profile');
         setLoading(false);
       },
       () => {
-        Toast.show({ type: 'error', text1: 'Xəta baş verdi' });
         setLoading(false);
       },
     );

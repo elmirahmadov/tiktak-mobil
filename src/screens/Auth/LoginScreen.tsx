@@ -37,8 +37,10 @@ export default function LoginScreen({ navigation, route }: any) {
       () => {
         navigation.navigate('Home');
       },
-      err => {
-        console.log('Login error:', err);
+      _err => {
+        // Store'daki Toast mesajı yeterli olduğu için burada
+        // ekstra Toast göstermeye gerek yok
+        // Toast.show({ type: 'error', text1: 'Şifrə və ya telefon yanlış!' });
       },
     );
   };

@@ -148,9 +148,6 @@ const BasketScreen: React.FC<BasketScreenProps> = ({ navigation }) => {
             style={styles.orderBtn}
             onPress={() => {
               navigation.navigate('Checkout');
-              setTimeout(() => {
-                navigation.navigate('OrderHistory');
-              }, 3000);
             }}
           >
             <Text style={styles.orderBtnText}>Sifarişi tamamla</Text>
@@ -295,7 +292,7 @@ const styles = StyleSheet.create({
   },
 
   orderBtn: {
-    backgroundColor: '#A6E6A6',
+    backgroundColor: '#92D871',
     borderRadius: 8,
     margin: 16,
     paddingVertical: 14,

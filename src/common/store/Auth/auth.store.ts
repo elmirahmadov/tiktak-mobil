@@ -46,7 +46,6 @@ export const useAuthStore = create<IAuthStore>()(
         setLoading: loading => set({ loading }),
 
         reset: () => set({ ...initial }),
-
         login: async (data, onSuccess, onError) => {
           set({ loading: true });
           try {
@@ -55,28 +54,36 @@ export const useAuthStore = create<IAuthStore>()(
             let access_token: string | undefined;
             let refresh_token: string | undefined;
             let profile: any;
-
             if (res?.access_token && res?.refresh_token) {
               access_token = res.access_token;
               refresh_token = res.refresh_token;
               profile = res.profile || res.user;
             } else if (res?.data?.tokens) {
+              console.log('📦 AUTH STORE: Token tipi - res.data.tokens içinde');
               access_token = res.data.tokens.access_token;
               refresh_token = res.data.tokens.refresh_token;
               profile = res.data.profile || res.data.user;
             } else if (res?.data?.access_token) {
+              console.log(
+                '📦 AUTH STORE: Token tipi - res.data içinde doğrudan',
+              );
               access_token = res.data.access_token;
               refresh_token = res.data.refresh_token;
               profile = res.data.profile || res.data.user;
             } else if (res?.tokens) {
+              console.log('📦 AUTH STORE: Token tipi - res.tokens içinde');
               access_token = res.tokens.access_token;
               refresh_token = res.tokens.refresh_token;
               profile = res.profile || res.user;
             }
 
             if (!access_token || !refresh_token) {
+              console.error('❌ AUTH STORE: Token bulunamadı!', res);
               throw new Error("API'den token alınamadı");
             }
+
+            console.log('🔐 AUTH STORE: Tokenlar alındı');
+            console.log('👤 AUTH STORE: Kullanıcı profili:', profile);
 
             set({
               accessToken: access_token,
@@ -86,49 +93,91 @@ export const useAuthStore = create<IAuthStore>()(
               loading: false,
             });
 
-            Toast.show({
-              type: 'success',
-              text1: 'Başarılı Giriş',
-              text2: 'Sisteme başarıyla giriş yaptınız',
-            });
-
+            console.log('💾 AUTH STORE: Store güncellendi');
             onSuccess?.();
+            console.log('🎉 AUTH STORE: Login işlemi tamamlandı');
           } catch (error) {
-            const errorResponse = error as ErrorResponse;
-            const rawMessage = parseErrorMessage(
-              errorResponse?.response?.data?.message,
-            );
-
-            const getErrorMessage = (errorMsg: string) => {
-              if (!errorMsg) return 'Bilinmeyen hata';
-              const lowerMsg = errorMsg.toLowerCase();
+            console.error('❌ AUTH STORE: Login hatası:', error);
+            try {
+              // Hata yanıtını güvenli kontrol et
+              let errorResponse: any = {};
               if (
-                lowerMsg.includes('password is wrong') ||
-                lowerMsg.includes('password incorrect')
-              )
-                return 'Parol yanlış!';
-              if (
-                lowerMsg.includes('user not found') ||
-                lowerMsg.includes('not found')
-              )
-                return 'Bu telefon nömrəsi ilə qeydiyyat tapılmadı!';
-              if (lowerMsg.includes('phone'))
-                return 'Telefon nömrəsi formatı yanlış!';
-              if (lowerMsg.includes('invalid')) return 'Məlumatlar yanlış!';
-              if (lowerMsg.includes('token'))
-                return 'Token alınırken hata oluştu!';
-              return errorMsg;
-            };
+                typeof error === 'object' &&
+                error !== null &&
+                'response' in error
+              ) {
+                errorResponse = error;
+                const errResp = (error as any).response;
+                if (
+                  errResp &&
+                  typeof errResp === 'object' &&
+                  'data' in errResp
+                ) {
+                  console.error('📋 AUTH STORE: Hata yanıtı:', errResp.data);
+                }
+              }
+              const rawMessage = parseErrorMessage(
+                errorResponse?.response?.data?.message,
+              );
+              console.log('📝 AUTH STORE: Ham hata mesajı:', rawMessage);
 
-            const errorMessage = getErrorMessage(rawMessage);
+              const getErrorMessage = (errorMsg: string) => {
+                if (!errorMsg) return 'Bilinmeyen hata';
+                const lowerMsg = errorMsg.toLowerCase();
+                if (
+                  lowerMsg.includes('password is wrong') ||
+                  lowerMsg.includes('password incorrect')
+                )
+                  return 'Parol yanlış!';
+                if (
+                  lowerMsg.includes('user not found') ||
+                  lowerMsg.includes('not found')
+                )
+                  return 'Bu telefon nömrəsi ilə qeydiyyat tapılmadı!';
+                if (lowerMsg.includes('phone'))
+                  return 'Telefon nömrəsi formatı yanlış!';
+                if (lowerMsg.includes('invalid')) return 'Məlumatlar yanlış!';
+                if (lowerMsg.includes('token'))
+                  return 'Token alınırken hata oluştu!';
+                return errorMsg;
+              };
 
-            Toast.show({
-              type: 'error',
-              text1: 'Giriş Hatası',
-              text2: errorMessage,
-            });
-            onError?.(error);
-            set({ loading: false });
+              const errorMessage = getErrorMessage(rawMessage);
+              console.log(
+                '🗣️ AUTH STORE: Kullanıcıya gösterilecek hata mesajı:',
+                errorMessage,
+              );
+
+              Toast.show({
+                type: 'error',
+                text1: 'Giriş Xətası',
+                text2: errorMessage,
+              });
+              console.log('🔔 AUTH STORE: Toast bildirimi gösterildi');
+
+              try {
+                if (onError) {
+                  console.log('📞 AUTH STORE: onError callback çağrılıyor');
+                  onError(error);
+                  console.log('✓ AUTH STORE: onError callback tamamlandı');
+                }
+              } catch (callbackError) {
+                console.error(
+                  '⚠️ AUTH STORE: onError callback hatası:',
+                  callbackError,
+                );
+              }
+            } catch (errorHandlingError) {
+              console.error(
+                '⚠️ AUTH STORE: Hata işleme sırasında başka bir hata oluştu:',
+                errorHandlingError,
+              );
+            } finally {
+              // Her durumda loading'i false yap
+              console.log('🔄 AUTH STORE: Loading durumu false yapılıyor');
+              set({ loading: false });
+              console.log('✓ AUTH STORE: Loading durumu false yapıldı');
+            }
           }
         },
 
@@ -140,8 +189,8 @@ export const useAuthStore = create<IAuthStore>()(
 
             Toast.show({
               type: 'success',
-              text1: 'Başarılı Qeydiyyat',
-              text2: 'Qeydiyyat başarıyla tamamlandı',
+              text1: 'Qeydiyyat Uğurlu',
+              text2: 'Qeydiyyat uğurla tamamlandı',
             });
 
             onSuccess?.();
@@ -180,7 +229,7 @@ export const useAuthStore = create<IAuthStore>()(
 
             Toast.show({
               type: 'error',
-              text1: 'Qeydiyyat Hatası',
+              text1: 'Qeydiyyat Xətası',
               text2: errorMessage,
             });
             onError?.(error);
@@ -233,13 +282,11 @@ export const useAuthStore = create<IAuthStore>()(
           set({ loading: true });
           try {
             const profile = await fetchProfile();
-            console.log('fetchProfile ile gelen:', profile);
             set(state => {
               const mergedUser = {
                 ...state.user,
                 ...profile,
               };
-              console.log('getProfile sonrası user:', mergedUser);
               return {
                 user: mergedUser,
                 isAuthenticated: true,
@@ -256,9 +303,7 @@ export const useAuthStore = create<IAuthStore>()(
         updateProfile: async (data, onSuccess, onError) => {
           set({ loading: true });
           try {
-            console.log('updateProfile called with data:', data);
             const updatedProfile = await updateProfile(data);
-            console.log('updateProfile response:', updatedProfile);
 
             set(state => ({
               user: {
@@ -270,8 +315,8 @@ export const useAuthStore = create<IAuthStore>()(
 
             Toast.show({
               type: 'success',
-              text1: 'Profil Güncellendi',
-              text2: 'Profil bilgileriniz başarıyla güncellendi',
+              text1: 'Profil Yeniləndi',
+              text2: 'Profil məlumatlarınız uğurla yeniləndi',
             });
 
             onSuccess?.();
@@ -292,8 +337,8 @@ export const useAuthStore = create<IAuthStore>()(
             );
             Toast.show({
               type: 'error',
-              text1: 'Profil Güncelleme Hatası',
-              text2: errorMsg || 'Profil güncəllənərkən xəta baş verdi',
+              text1: 'Profil Yeniləmə Xətası',
+              text2: errorMsg || 'Profil yenilənərkən xəta baş verdi',
             });
             onError?.(error);
             set({ loading: false });

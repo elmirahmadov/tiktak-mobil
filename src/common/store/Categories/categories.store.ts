@@ -38,15 +38,12 @@ export const useCategoriesStore = create<ICategoriesStore>()(
         getCategories: async (onSuccess, onError) => {
           set({ loading: true });
           try {
-            console.log('[getCategories] API çağrılıyor');
             const res = await fetchCategories();
-            console.log('[getCategories] API response:', res);
 
             set({
               categories: res.data || [],
               loading: false,
             });
-            console.log('[getCategories] State güncellendi:', res.data || []);
 
             onSuccess?.();
           } catch (error) {
@@ -58,8 +55,8 @@ export const useCategoriesStore = create<ICategoriesStore>()(
 
             Toast.show({
               type: 'error',
-              text1: 'Kategoriler Yüklenemedi',
-              text2: errorMessage || 'Bir hata oluştu',
+              text1: 'Kateqoriyalar Yüklənmədi',
+              text2: errorMessage || 'Bir xəta baş verdi',
             });
             onError?.(error);
             set({ loading: false });

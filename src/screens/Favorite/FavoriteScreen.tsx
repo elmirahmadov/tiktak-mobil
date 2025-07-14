@@ -83,7 +83,6 @@ const SiyahilarimScreen = ({ navigation }: { navigation: any }) => {
 
   const handleAddToBasket = React.useCallback(
     (product: any) => {
-      console.log('[AddToBasket] Ürün ekleniyor:', product);
       addToBasket(product.id, { product_id: product.id, quantity: 1 });
     },
     [addToBasket],
@@ -91,11 +90,28 @@ const SiyahilarimScreen = ({ navigation }: { navigation: any }) => {
 
   const handleRemoveFromBasket = React.useCallback(
     (product: any) => {
-      console.log('[RemoveFromBasket] Ürün çıkarılıyor:', product);
       removeFromBasket({ product_id: product.id });
     },
     [removeFromBasket],
   );
+
+  const handleToggleFavorite = async (productId: any) => {
+    await toggleFavorite(productId);
+    actions.getFavorites(
+      (data: any) => {
+        if (Array.isArray(data)) {
+          setFavoriteProducts(data);
+          if (
+            selectedProduct &&
+            !data.some((p: any) => p.id === selectedProduct.id)
+          ) {
+            closeModal();
+          }
+        }
+      },
+      () => {},
+    );
+  };
 
   const basketCount = basketItems.reduce(
     (sum, item) => sum + (item.quantity || 0),
@@ -267,7 +283,7 @@ const SiyahilarimScreen = ({ navigation }: { navigation: any }) => {
                 zIndex: 2,
               }}
               activeOpacity={0.7}
-              onPress={() => toggleFavorite(selectedProduct.id)}
+              onPress={() => handleToggleFavorite(selectedProduct.id)}
             >
               {isFavorite(selectedProduct) ? (
                 <AntDesign name="heart" size={28} color="#F44336" />

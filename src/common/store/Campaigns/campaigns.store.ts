@@ -38,15 +38,12 @@ export const useCampaignsStore = create<ICampaignsStore>()(
         getCampaigns: async (onSuccess, onError) => {
           set({ loading: true });
           try {
-            console.log('[getCampaigns] API çağrılıyor');
             const res = await fetchCampaigns();
-            console.log('[getCampaigns] API response:', res);
 
             set({
               campaigns: res.data || [],
               loading: false,
             });
-            console.log('[getCampaigns] State güncellendi:', res.data || []);
 
             onSuccess?.();
           } catch (error) {
@@ -58,8 +55,8 @@ export const useCampaignsStore = create<ICampaignsStore>()(
 
             Toast.show({
               type: 'error',
-              text1: 'Kampanyalar Yüklenemedi',
-              text2: errorMessage || 'Bir hata oluştu',
+              text1: 'Kampaniyalar Yüklənmədi',
+              text2: errorMessage || 'Bir xəta baş verdi',
             });
             onError?.(error);
             set({ loading: false });

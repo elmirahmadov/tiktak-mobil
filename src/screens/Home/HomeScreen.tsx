@@ -258,6 +258,9 @@ const HomeScreen: React.FC<NavigationProps> = ({ navigation }) => {
                 numColumns={3}
                 renderItem={renderCategoryItem}
                 contentContainerStyle={styles.productsGrid}
+                columnWrapperStyle={{
+                  justifyContent: 'space-between',
+                }}
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
                 removeClippedSubviews={true}
@@ -397,10 +400,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 6,
-    flex: 1,
-    minWidth: 100,
-    maxWidth: 120,
+    marginVertical: 8,
+    width: '31%',
+    aspectRatio: 1,
     paddingVertical: 12,
     elevation: 2,
     shadowColor: '#000',

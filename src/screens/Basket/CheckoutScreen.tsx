@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   orderBtn: {
-    backgroundColor: '#A6E6A6',
+    backgroundColor: '#92D871',
     borderRadius: 8,
     margin: 16,
     paddingVertical: 14,

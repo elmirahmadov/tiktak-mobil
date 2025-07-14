@@ -14,14 +14,12 @@ export const useUploadStore = create<UploadStore>((set, _get) => ({
       set({ isLoading: true, error: null });
 
       const response = await uploadImage(file);
-      console.log('Upload API response:', response);
 
       const imageUrl =
         response.img_url ||
         response.url ||
         response.data?.img_url ||
         response.data?.url;
-      console.log('Extracted image URL:', imageUrl);
 
       set({
         isLoading: false,
@@ -31,8 +29,6 @@ export const useUploadStore = create<UploadStore>((set, _get) => ({
 
       return imageUrl;
     } catch (error: any) {
-      console.log('Upload error:', error);
-      console.log('Upload error response:', error.response?.data);
       const errorMessage =
         error.response?.data?.message || error.message || 'Upload failed';
       set({

@@ -12,7 +12,6 @@ import {
   formatPhoneNumber,
   cleanPhoneNumber,
 } from '../../common/utils/phoneUtils';
-import Toast from 'react-native-toast-message';
 
 export default function RegisterScreen({ navigation }: any) {
   const loading = useAuthLoading();
@@ -30,20 +29,13 @@ export default function RegisterScreen({ navigation }: any) {
     await actions.signup(
       { full_name: name, phone: cleanPhoneNumber(phone), password },
       () => {
-        Toast.show({
-          type: 'success',
-          text1: 'Qeydiyyat uğurlu!',
-          text2: 'Artıq hesabınızla daxil ola bilərsiniz.',
-        });
         navigation.navigate('Login', { phone: cleanPhoneNumber(phone) });
+        // Başarılıysa inputları sıfırlamak istersen buraya ekleyebilirsin
+        // setName(''); setPhone(''); setPassword('');
       },
-      err => {
-        Toast.show({
-          type: 'error',
-          text1: 'Qeydiyyat xətası!',
-          text2: 'Bir problem baş verdi.',
-        });
-        console.log('Register error:', err);
+      _err => {
+        // Hatalıysa inputlara dokunma, sadece Toast göster
+        // setName(''); setPhone(''); setPassword(''); // BUNLARI KOYMA!
       },
     );
   };
@@ -63,6 +55,9 @@ export default function RegisterScreen({ navigation }: any) {
         value={phone}
         onChangeText={handlePhoneChange}
         keyboardType="phone-pad"
+        onFocus={() => {
+          if (!phone) setPhone('(+994) ');
+        }}
       />
       <View style={styles.inputWrapper}>
         <TextInput
