@@ -1,14 +1,19 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import { useBasketStore } from '../../common/store/Basket';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OrderSuccessScreen = ({ navigation }: { navigation: any }) => {
+  const actions = useBasketStore(state => state.actions);
   useEffect(() => {
+    actions.reset();
+    AsyncStorage.removeItem('basket-store');
     const timer = setTimeout(() => {
       navigation.replace('OrderHistory');
     }, 3000);
     return () => clearTimeout(timer);
-  }, [navigation]);
+  }, [navigation, actions]);
 
   return (
     <View style={styles.container}>

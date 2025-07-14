@@ -14,8 +14,10 @@ import {
 import Header from '../../common/components/Header';
 import Footer from '../../common/components/Footer';
 import { useProductsStore } from '../../common/store/Products';
+import { useBasketStore } from '../../common/store/Basket';
 import Modal from 'react-native-modal';
 import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const defaultProductImage = require('../../images/image/splash.png');
 
@@ -24,6 +26,12 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   const productsLoading = useProductsStore(state => state.loading);
   const getProducts = useProductsStore(state => state.actions.getProducts);
   const resetProducts = useProductsStore(state => state.actions.reset);
+  const favorites = useProductsStore(state => state.favorites);
+  const toggleFavorite = useProductsStore(
+    state => state.actions.toggleFavorite,
+  );
+  const addToBasket = useBasketStore(state => state.actions.addToBasket);
+  const getFavorites = useProductsStore(state => state.actions.getFavorites);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
@@ -45,7 +53,8 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   useEffect(() => {
     resetProducts();
     getProducts();
-  }, [getProducts, resetProducts]);
+    getFavorites();
+  }, [getProducts, resetProducts, getFavorites]);
 
   const filteredProducts = React.useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -188,8 +197,19 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                 zIndex: 2,
               }}
               activeOpacity={0.7}
+              onPress={async () => {
+                await toggleFavorite(selectedProduct.id);
+              }}
             >
-              <Feather name="heart" size={28} color="#BDBDBD" />
+              <AntDesign
+                name="hearto"
+                size={28}
+                color={
+                  favorites.includes(Number(selectedProduct.id))
+                    ? '#F44336'
+                    : '#BDBDBD'
+                }
+              />
             </TouchableOpacity>
             <Image
               source={
@@ -248,7 +268,11 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                 alignItems: 'center',
                 marginBottom: 8,
               }}
-              onPress={() => {
+              onPress={async () => {
+                await addToBasket(selectedProduct.id, {
+                  product_id: selectedProduct.id,
+                  quantity: 1,
+                });
                 setModalVisible(false);
               }}
             >

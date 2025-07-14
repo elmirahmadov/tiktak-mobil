@@ -285,11 +285,11 @@ const SiyahilarimScreen = ({ navigation }: { navigation: any }) => {
               activeOpacity={0.7}
               onPress={() => handleToggleFavorite(selectedProduct.id)}
             >
-              {isFavorite(selectedProduct) ? (
-                <AntDesign name="heart" size={28} color="#F44336" />
-              ) : (
-                <AntDesign name="hearto" size={28} color="#BDBDBD" />
-              )}
+              <AntDesign
+                name="hearto"
+                size={28}
+                color={isFavorite(selectedProduct) ? '#F44336' : '#BDBDBD'}
+              />
             </TouchableOpacity>
             <Image
               source={
