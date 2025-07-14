@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/Auth/LoginScreen';
@@ -14,12 +14,21 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 import AccountInfoScreen from '../screens/Profile/AccountInfoScreen';
 import OrderHistoryScreen from '../screens/Order/OrderHistoryScreen';
 import FavoriteScreen from '../screens/Favorite/FavoriteScreen';
+import { setNavigationRef } from '../common/helpers/instance';
 
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
+  const navigationRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (navigationRef.current) {
+      setNavigationRef(navigationRef.current);
+    }
+  }, []);
+
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{ headerShown: false }}
