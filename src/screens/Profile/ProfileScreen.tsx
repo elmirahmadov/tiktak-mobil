@@ -111,7 +111,8 @@ const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
           <TouchableOpacity
             style={styles.menuItem}
             onPress={async () => {
-              await actions.logout(() => _navigation.navigate('Login'));
+              await actions.logout();
+              _navigation.replace('Login');
             }}
           >
             <Feather

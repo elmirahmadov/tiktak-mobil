@@ -29,14 +29,9 @@ export default function RegisterScreen({ navigation }: any) {
     await actions.signup(
       { full_name: name, phone: cleanPhoneNumber(phone), password },
       () => {
-        navigation.navigate('Login', { phone: cleanPhoneNumber(phone) });
-        // Başarılıysa inputları sıfırlamak istersen buraya ekleyebilirsin
-        // setName(''); setPhone(''); setPassword('');
+        navigation.replace('Login', { phone: cleanPhoneNumber(phone) });
       },
-      _err => {
-        // Hatalıysa inputlara dokunma, sadece Toast göster
-        // setName(''); setPhone(''); setPassword(''); // BUNLARI KOYMA!
-      },
+      _err => {},
     );
   };
 

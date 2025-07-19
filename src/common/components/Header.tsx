@@ -1,5 +1,11 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useBasketStore } from '../store/Basket';
 
@@ -20,36 +26,38 @@ const Header = ({ navigation }: { navigation?: any }) => {
   }, [getBasket]);
 
   return (
-    <View style={styles.header}>
-      <Text style={styles.title}>TIK TAK</Text>
-      <View style={styles.headerActions}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation && navigation.navigate && navigation.navigate('Basket')
-          }
-          style={styles.actionButton}
-        >
-          <View style={{ position: 'relative' }}>
-            <Feather name="shopping-cart" size={24} color="#222" />
-            {totalCount > 0 && (
-              <View style={styles.badgeContainer}>
-                <Text style={styles.badgeText}>{totalCount}</Text>
-              </View>
-            )}
-          </View>
-        </TouchableOpacity>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <Text style={styles.title}>TIK TAK</Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation && navigation.navigate && navigation.navigate('Basket')
+            }
+            style={styles.actionButton}
+          >
+            <View style={{ position: 'relative' }}>
+              <Feather name="shopping-cart" size={24} color="#222" />
+              {totalCount > 0 && (
+                <View style={styles.badgeContainer}>
+                  <Text style={styles.badgeText}>{totalCount}</Text>
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {},
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 16,
     paddingBottom: 8,
     backgroundColor: '#fff',
     shadowColor: '#000',
@@ -72,8 +80,8 @@ const styles = StyleSheet.create({
   },
   badgeContainer: {
     position: 'absolute',
-    right: -10,
-    top: -10,
+    right: -8,
+    top: -3,
     minWidth: 18,
     height: 18,
     borderRadius: 9,
@@ -86,7 +94,7 @@ const styles = StyleSheet.create({
   badgeText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 12,
+    fontSize: 10,
     textAlign: 'center',
   },
 });

@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useAuthStore } from '../common/store/Auth';
 import LoginScreen from '../screens/Auth/LoginScreen';
 import RegisterScreen from '../screens/Auth/RegisterScreen';
 import SplashScreen from '../screens/Auth/SplashScreen';
@@ -20,17 +21,34 @@ const Stack = createStackNavigator();
 
 export default function AppNavigator() {
   const navigationRef = useRef<any>(null);
+  const { isAuthenticated, accessToken } = useAuthStore();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (navigationRef.current) {
       setNavigationRef(navigationRef.current);
     }
+
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, []);
+
+  const initialRoute = useMemo(() => {
+    if (!isReady) return 'Splash';
+    return isAuthenticated && accessToken ? 'Home' : 'Splash';
+  }, [isReady, isAuthenticated, accessToken]);
+
+  if (!isReady) {
+    return null;
+  }
 
   return (
     <NavigationContainer ref={navigationRef}>
       <Stack.Navigator
-        initialRouteName="Splash"
+        initialRouteName={initialRoute}
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="Splash" component={SplashScreen} />
