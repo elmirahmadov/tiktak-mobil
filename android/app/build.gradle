@@ -89,10 +89,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('my-release-key.keystore')
-            storePassword 'tiktak123'
-            keyAlias 'my-key-alias'
-            keyPassword 'tiktak123'
+            storeFile file(project.hasProperty('MYAPP_RELEASE_STORE_FILE') ? project.property('MYAPP_RELEASE_STORE_FILE') : 'app/my-release-key.keystore')
+            storePassword project.hasProperty('MYAPP_RELEASE_STORE_PASSWORD') ? project.property('MYAPP_RELEASE_STORE_PASSWORD') : ''
+            keyAlias project.hasProperty('MYAPP_RELEASE_KEY_ALIAS') ? project.property('MYAPP_RELEASE_KEY_ALIAS') : ''
+            keyPassword project.hasProperty('MYAPP_RELEASE_KEY_PASSWORD') ? project.property('MYAPP_RELEASE_KEY_PASSWORD') : ''
         }
     }
     buildTypes {
@@ -101,6 +101,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+android.applicationVariants.all { variant ->
+    variant.outputs.all { output ->
+        println "APK output for ${variant.name}: ${output.outputFile}"
     }
 }
 

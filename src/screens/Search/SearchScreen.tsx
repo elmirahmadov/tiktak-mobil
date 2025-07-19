@@ -27,7 +27,6 @@ import BottomSheet, {
   BottomSheetView,
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
-import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const SearchScreen = ({ navigation }: { navigation: any }) => {
   const allProducts = useProductsStore(state => state.products);
@@ -127,7 +126,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <SafeAreaWrapper>
+    <View style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -151,7 +150,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
               : String(index)
           }
           renderItem={renderProductRow}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[styles.listContent, { paddingBottom: 80 }]}
           ListEmptyComponent={
             searchQuery.trim() && !productsLoading ? (
               <View style={{ alignItems: 'center', marginTop: 40 }}>
@@ -184,7 +183,6 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
           }
           keyboardShouldPersistTaps="handled"
         />
-        <Footer navigation={navigation} active="Search" />
         <BottomSheet
           ref={bottomSheetRef}
           index={-1}
@@ -254,7 +252,8 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
           </BottomSheetView>
         </BottomSheet>
       </KeyboardAvoidingView>
-    </SafeAreaWrapper>
+      <Footer navigation={navigation} active="Search" />
+    </View>
   );
 };
 

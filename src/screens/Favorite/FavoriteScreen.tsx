@@ -17,7 +17,6 @@ import BottomSheet, {
   BottomSheetView,
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
-import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const CARD_GAP = 12;
 const CARD_HORIZONTAL_PADDING = 16;
@@ -201,7 +200,7 @@ const SiyahilarimScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <SafeAreaWrapper>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
       <View style={styles.headerRowCentered}>
         <View style={{ width: 32, alignItems: 'flex-start' }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -337,7 +336,7 @@ const SiyahilarimScreen = ({ navigation }: { navigation: any }) => {
           )}
         </BottomSheetView>
       </BottomSheet>
-    </SafeAreaWrapper>
+    </View>
   );
 };
 

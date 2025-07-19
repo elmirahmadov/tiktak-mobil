@@ -23,7 +23,6 @@ import BottomSheet, {
   BottomSheetView,
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
-import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -143,7 +142,7 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <SafeAreaWrapper>
+    <View style={{ flex: 1 }}>
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={24} color="#222" />
@@ -195,7 +194,7 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
           )}
         </BottomSheetView>
       </BottomSheet>
-    </SafeAreaWrapper>
+    </View>
   );
 };
 
@@ -356,7 +355,7 @@ const OrderDetailModal = ({
       </View>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+        contentContainerStyle={{ padding: 20, paddingBottom: 8 }}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.summaryGridCustom}>
@@ -909,9 +908,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 0,
     marginBottom: 4,
     gap: 8,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
   },
   totalSumLabel: {
     fontSize: 17,

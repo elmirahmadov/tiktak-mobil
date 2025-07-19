@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useBasketStore } from '../../common/store/Basket';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const OrderSuccessScreen = ({ navigation }: { navigation: any }) => {
   const actions = useBasketStore(state => state.actions);
@@ -17,26 +16,24 @@ const OrderSuccessScreen = ({ navigation }: { navigation: any }) => {
   }, [navigation, actions]);
 
   return (
-    <SafeAreaWrapper>
-      <View style={styles.container}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Feather name="arrow-left" size={24} color="#222" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Sifarişi tamamla</Text>
-          <View style={{ width: 24 }} />
-        </View>
-        <View style={styles.content}>
-          <View style={styles.iconWrapper}>
-            <Feather name="check" size={80} color="#6DD96D" />
-          </View>
-          <Text style={styles.successTitle}>Sifariş uğurla tamamlandı</Text>
-          <Text style={styles.successDesc}>
-            Əməkdaşlarımız sizinlə əlaqə saxlayıb sifarişinizi göndərəcəklər.
-          </Text>
-        </View>
+    <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Feather name="arrow-left" size={24} color="#222" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Sifarişi tamamla</Text>
+        <View style={{ width: 24 }} />
       </View>
-    </SafeAreaWrapper>
+      <View style={styles.content}>
+        <View style={styles.iconWrapper}>
+          <Feather name="check" size={80} color="#6DD96D" />
+        </View>
+        <Text style={styles.successTitle}>Sifariş uğurla tamamlandı</Text>
+        <Text style={styles.successDesc}>
+          Əməkdaşlarımız sizinlə əlaqə saxlayıb sifarişinizi göndərəcəklər.
+        </Text>
+      </View>
+    </View>
   );
 };
 

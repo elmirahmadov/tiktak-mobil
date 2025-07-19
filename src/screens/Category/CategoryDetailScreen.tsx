@@ -28,7 +28,6 @@ import BottomSheet, {
   BottomSheetView,
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
-import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const CARD_HORIZONTAL_PADDING = 16;
 const CARD_GAP = 12;
@@ -237,10 +236,8 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
   );
 
   return (
-    <SafeAreaWrapper>
-      <View style={styles.headerWrapper}>
-        <Header navigation={navigation} />
-      </View>
+    <View style={styles.headerWrapper}>
+      <Header navigation={navigation} />
       <View style={styles.stickyTop}>
         <TouchableOpacity
           style={styles.mainCategoryButton}
@@ -467,13 +464,15 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
           )}
         </BottomSheetView>
       </BottomSheet>
-    </SafeAreaWrapper>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   headerWrapper: {
+    flex: 1,
+    backgroundColor: '#fff',
     zIndex: 0,
   },
   headerBox: {

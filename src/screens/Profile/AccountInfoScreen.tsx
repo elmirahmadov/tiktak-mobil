@@ -12,7 +12,6 @@ import {
 import { useAuthStore } from '../../common/store/Auth';
 import Feather from 'react-native-vector-icons/Feather';
 import Footer from '../../common/components/Footer';
-import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
   const user = useAuthStore(state => state.user);
@@ -54,95 +53,93 @@ const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <SafeAreaWrapper>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backBtn}
-          >
-            <Feather name="arrow-left" size={24} color="#222" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Hesab</Text>
-          <View style={{ width: 24 }} />
-        </View>
-
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <View style={styles.headerRow}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
         >
-          <View style={styles.formWrapper}>
-            <Text style={styles.label}>Ad Soyad</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Ad, Soyad"
-              placeholderTextColor="#BDBDC7"
-              value={name}
-              onChangeText={setName}
-            />
-            <Text style={styles.label}>Ünvan</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="ünvan"
-              placeholderTextColor="#BDBDC7"
-              value={address}
-              onChangeText={setAddress}
-            />
-            <Text style={styles.label}>Telefon nömrəsi</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="(+994) _/__/__/__"
-              placeholderTextColor="#BDBDC7"
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-            />
-            <Text style={styles.label}>E-mail</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="E-mail"
-              placeholderTextColor="#BDBDC7"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <Text style={styles.label}>Şifrə</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Şifrə"
-              placeholderTextColor="#BDBDC7"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-            <Text style={styles.label}>Şifrənin təkrarı</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Şifrənin təkrarı"
-              placeholderTextColor="#BDBDC7"
-              value={passwordRepeat}
-              onChangeText={setPasswordRepeat}
-              secureTextEntry
-            />
-            <TouchableOpacity
-              style={styles.saveBtn}
-              onPress={handleSave}
-              disabled={loading}
-            >
-              <Text style={styles.saveBtnText}>Yadda saxla</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-        <Footer navigation={navigation} active="Profile" />
-      </KeyboardAvoidingView>
-    </SafeAreaWrapper>
+          <Feather name="arrow-left" size={24} color="#222" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Hesab</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.formWrapper}>
+          <Text style={styles.label}>Ad Soyad</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ad, Soyad"
+            placeholderTextColor="#BDBDC7"
+            value={name}
+            onChangeText={setName}
+          />
+          <Text style={styles.label}>Ünvan</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="ünvan"
+            placeholderTextColor="#BDBDC7"
+            value={address}
+            onChangeText={setAddress}
+          />
+          <Text style={styles.label}>Telefon nömrəsi</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="(+994) _/__/__/__"
+            placeholderTextColor="#BDBDC7"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+          />
+          <Text style={styles.label}>E-mail</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="E-mail"
+            placeholderTextColor="#BDBDC7"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <Text style={styles.label}>Şifrə</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Şifrə"
+            placeholderTextColor="#BDBDC7"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+          <Text style={styles.label}>Şifrənin təkrarı</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Şifrənin təkrarı"
+            placeholderTextColor="#BDBDC7"
+            value={passwordRepeat}
+            onChangeText={setPasswordRepeat}
+            secureTextEntry
+          />
+          <TouchableOpacity
+            style={styles.saveBtn}
+            onPress={handleSave}
+            disabled={loading}
+          >
+            <Text style={styles.saveBtnText}>Yadda saxla</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      <Footer navigation={navigation} active="Profile" />
+    </KeyboardAvoidingView>
   );
 };
 
