@@ -15,6 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { useBasketStore } from '../../common/store/Basket';
 import { useAuthStore } from '../../common/store/Auth/auth.store';
 import { checkout as orderCheckout } from '../../common/services/api/order.api';
+import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const CheckoutScreen = ({ navigation }: { navigation: any }) => {
   const basketItems = useBasketStore(state => state.items) || [];
@@ -61,115 +62,119 @@ const CheckoutScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-    >
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+    <SafeAreaWrapper>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Feather name="arrow-left" size={24} color="#222" />
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.headerRow}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Feather name="arrow-left" size={24} color="#222" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Sifarişi tamamla</Text>
+            <View style={{ width: 24 }} />
+          </View>
+          <View style={styles.infoBox}>
+            <Text style={styles.label}>Adınız</Text>
+            <Text style={styles.value}>{user.full_name || '-'}</Text>
+            <Text style={styles.label}>Unvanınız</Text>
+            <Text style={styles.value}>
+              {user.address || user.adres || user.location || '-'}
+            </Text>
+            <Text style={styles.label}>Telefon</Text>
+            <Text style={styles.value}>{user.phone || '-'}</Text>
+            <Text style={styles.label}>Əlavə qeydiniz</Text>
+            <TextInput
+              style={styles.noteInput}
+              placeholder=""
+              value={note}
+              onChangeText={setNote}
+              multiline
+            />
+            <View style={styles.paymentRow}>
+              <TouchableOpacity
+                style={styles.radioRow}
+                onPress={() => setPayment('cash')}
+              >
+                <View
+                  style={[
+                    styles.radioCircle,
+                    payment === 'cash' && styles.radioCircleActive,
+                  ]}
+                >
+                  {payment === 'cash' && <View style={styles.radioDot} />}
+                </View>
+                <Text
+                  style={[
+                    styles.radioLabel,
+                    payment === 'cash' && { color: '#6DD96D' },
+                  ]}
+                >
+                  Qapıda nağd
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.radioRow}
+                onPress={() => setPayment('card')}
+              >
+                <View
+                  style={[
+                    styles.radioCircle,
+                    payment === 'card' && styles.radioCircleActive,
+                  ]}
+                >
+                  {payment === 'card' && <View style={styles.radioDot} />}
+                </View>
+                <Text
+                  style={[
+                    styles.radioLabel,
+                    payment === 'card' && { color: '#6DD96D' },
+                  ]}
+                >
+                  Qapıda kart
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.summaryBox}>
+            <FlatList
+              data={basketItems}
+              renderItem={renderItem}
+              keyExtractor={item => String(item.product_id || item.product?.id)}
+              scrollEnabled={false}
+            />
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Ümumi:</Text>
+              <Text style={styles.summaryValue}>
+                {totalPrice.toFixed(2)} AZN
+              </Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Çatdırılma:</Text>
+              <Text style={styles.summaryValue}>Pulsuz</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={[styles.summaryLabel, { fontWeight: 'bold' }]}>
+                Yekun məbləğ:
+              </Text>
+              <Text style={[styles.summaryValue, { fontWeight: 'bold' }]}>
+                {totalPrice.toFixed(2)} AZN
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.orderBtn} onPress={handleOrder}>
+            <Text style={styles.orderBtnText}>Sifarişi tamamla</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Sifarişi tamamla</Text>
-          <View style={{ width: 24 }} />
-        </View>
-        <View style={styles.infoBox}>
-          <Text style={styles.label}>Adınız</Text>
-          <Text style={styles.value}>{user.full_name || '-'}</Text>
-          <Text style={styles.label}>Unvanınız</Text>
-          <Text style={styles.value}>
-            {user.address || user.adres || user.location || '-'}
-          </Text>
-          <Text style={styles.label}>Telefon</Text>
-          <Text style={styles.value}>{user.phone || '-'}</Text>
-          <Text style={styles.label}>Əlavə qeydiniz</Text>
-          <TextInput
-            style={styles.noteInput}
-            placeholder=""
-            value={note}
-            onChangeText={setNote}
-            multiline
-          />
-          <View style={styles.paymentRow}>
-            <TouchableOpacity
-              style={styles.radioRow}
-              onPress={() => setPayment('cash')}
-            >
-              <View
-                style={[
-                  styles.radioCircle,
-                  payment === 'cash' && styles.radioCircleActive,
-                ]}
-              >
-                {payment === 'cash' && <View style={styles.radioDot} />}
-              </View>
-              <Text
-                style={[
-                  styles.radioLabel,
-                  payment === 'cash' && { color: '#6DD96D' },
-                ]}
-              >
-                Qapıda nağd
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.radioRow}
-              onPress={() => setPayment('card')}
-            >
-              <View
-                style={[
-                  styles.radioCircle,
-                  payment === 'card' && styles.radioCircleActive,
-                ]}
-              >
-                {payment === 'card' && <View style={styles.radioDot} />}
-              </View>
-              <Text
-                style={[
-                  styles.radioLabel,
-                  payment === 'card' && { color: '#6DD96D' },
-                ]}
-              >
-                Qapıda kart
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.summaryBox}>
-          <FlatList
-            data={basketItems}
-            renderItem={renderItem}
-            keyExtractor={item => String(item.product_id || item.product?.id)}
-            scrollEnabled={false}
-          />
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Ümumi:</Text>
-            <Text style={styles.summaryValue}>{totalPrice.toFixed(2)} AZN</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Çatdırılma:</Text>
-            <Text style={styles.summaryValue}>Pulsuz</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={[styles.summaryLabel, { fontWeight: 'bold' }]}>
-              Yekun məbləğ:
-            </Text>
-            <Text style={[styles.summaryValue, { fontWeight: 'bold' }]}>
-              {totalPrice.toFixed(2)} AZN
-            </Text>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.orderBtn} onPress={handleOrder}>
-          <Text style={styles.orderBtnText}>Sifarişi tamamla</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaWrapper>
   );
 };
 

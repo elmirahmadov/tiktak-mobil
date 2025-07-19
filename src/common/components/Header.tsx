@@ -1,11 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useBasketStore } from '../store/Basket';
 
@@ -26,35 +20,30 @@ const Header = ({ navigation }: { navigation?: any }) => {
   }, [getBasket]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <Text style={styles.title}>TIK TAK</Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            onPress={() =>
-              navigation && navigation.navigate && navigation.navigate('Basket')
-            }
-            style={styles.actionButton}
-          >
-            <View style={{ position: 'relative' }}>
-              <Feather name="shopping-cart" size={24} color="#222" />
-              {totalCount > 0 && (
-                <View style={styles.badgeContainer}>
-                  <Text style={styles.badgeText}>{totalCount}</Text>
-                </View>
-              )}
-            </View>
-          </TouchableOpacity>
-        </View>
+    <View style={styles.header}>
+      <Text style={styles.title}>TIK TAK</Text>
+      <View style={styles.headerActions}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation && navigation.navigate && navigation.navigate('Basket')
+          }
+          style={styles.actionButton}
+        >
+          <View style={{ position: 'relative' }}>
+            <Feather name="shopping-cart" size={24} color="#222" />
+            {totalCount > 0 && (
+              <View style={styles.badgeContainer}>
+                <Text style={styles.badgeText}>{totalCount}</Text>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: '#fff',
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

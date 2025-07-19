@@ -27,6 +27,7 @@ import BottomSheet, {
   BottomSheetView,
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
+import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const SearchScreen = ({ navigation }: { navigation: any }) => {
   const allProducts = useProductsStore(state => state.products);
@@ -126,132 +127,134 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-    >
-      <Header navigation={navigation} />
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Axtar"
-          placeholderTextColor="#888"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-      </View>
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item, index) =>
-          item && item.id != null
-            ? String(item.id) + '-' + index
-            : String(index)
-        }
-        renderItem={renderProductRow}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          searchQuery.trim() && !productsLoading ? (
-            <View style={{ alignItems: 'center', marginTop: 40 }}>
-              <View
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 40,
-                  backgroundColor: '#F2F2F2',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginBottom: 16,
-                }}
-              >
-                <Feather name="x" size={48} color="#D1D1D1" />
-              </View>
-              <Text
-                style={{
-                  color: '#D1D1D1',
-                  fontSize: 16,
-                  marginTop: 8,
-                  textAlign: 'center',
-                  fontWeight: '500',
-                }}
-              >
-                Axtarış nəticəsi tapılmadı
-              </Text>
-            </View>
-          ) : null
-        }
-        keyboardShouldPersistTaps="handled"
-      />
-      <Footer navigation={navigation} active="Search" />
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        backdropComponent={renderBackdrop}
-        onClose={() => {
-          setSelectedProduct(null);
-        }}
+    <SafeAreaWrapper>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        <BottomSheetView style={styles.bottomSheetContent}>
-          {selectedProduct && (
-            <View style={styles.productDetailContainer}>
-              <TouchableOpacity
-                style={styles.favoriteButton}
-                activeOpacity={0.7}
-                onPress={async () => {
-                  await toggleFavorite(selectedProduct.id);
-                }}
-              >
-                <AntDesign
-                  name="hearto"
-                  size={28}
-                  color={
-                    favorites.includes(Number(selectedProduct.id))
-                      ? '#F44336'
-                      : '#BDBDBD'
-                  }
-                />
-              </TouchableOpacity>
+        <Header navigation={navigation} />
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Axtar"
+            placeholderTextColor="#888"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+        <FlatList
+          data={filteredProducts}
+          keyExtractor={(item, index) =>
+            item && item.id != null
+              ? String(item.id) + '-' + index
+              : String(index)
+          }
+          renderItem={renderProductRow}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={
+            searchQuery.trim() && !productsLoading ? (
+              <View style={{ alignItems: 'center', marginTop: 40 }}>
+                <View
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    backgroundColor: '#F2F2F2',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginBottom: 16,
+                  }}
+                >
+                  <Feather name="x" size={48} color="#D1D1D1" />
+                </View>
+                <Text
+                  style={{
+                    color: '#D1D1D1',
+                    fontSize: 16,
+                    marginTop: 8,
+                    textAlign: 'center',
+                    fontWeight: '500',
+                  }}
+                >
+                  Axtarış nəticəsi tapılmadı
+                </Text>
+              </View>
+            ) : null
+          }
+          keyboardShouldPersistTaps="handled"
+        />
+        <Footer navigation={navigation} active="Search" />
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1}
+          snapPoints={snapPoints}
+          enablePanDownToClose={true}
+          backdropComponent={renderBackdrop}
+          onClose={() => {
+            setSelectedProduct(null);
+          }}
+        >
+          <BottomSheetView style={styles.bottomSheetContent}>
+            {selectedProduct && (
+              <View style={styles.productDetailContainer}>
+                <TouchableOpacity
+                  style={styles.favoriteButton}
+                  activeOpacity={0.7}
+                  onPress={async () => {
+                    await toggleFavorite(selectedProduct.id);
+                  }}
+                >
+                  <AntDesign
+                    name="hearto"
+                    size={28}
+                    color={
+                      favorites.includes(Number(selectedProduct.id))
+                        ? '#F44336'
+                        : '#BDBDBD'
+                    }
+                  />
+                </TouchableOpacity>
 
-              {selectedProduct.img_url || selectedProduct.image ? (
-                <Image
-                  source={
-                    selectedProduct.img_url
-                      ? { uri: selectedProduct.img_url }
-                      : { uri: selectedProduct.image }
-                  }
-                  style={styles.productImageLarge}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View style={styles.productImageLarge} />
-              )}
+                {selectedProduct.img_url || selectedProduct.image ? (
+                  <Image
+                    source={
+                      selectedProduct.img_url
+                        ? { uri: selectedProduct.img_url }
+                        : { uri: selectedProduct.image }
+                    }
+                    style={styles.productImageLarge}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={styles.productImageLarge} />
+                )}
 
-              <Text style={styles.productTitle}>{selectedProduct.title}</Text>
-              <Text style={styles.productDescription}>
-                {selectedProduct.description}
-              </Text>
-              <Text style={styles.productPriceLarge}>
-                {selectedProduct.price} AZN
-              </Text>
-              <TouchableOpacity
-                style={styles.addToBasketButton}
-                onPress={async () => {
-                  await addToBasket(selectedProduct.id, {
-                    product_id: selectedProduct.id,
-                    quantity: 1,
-                  });
-                  closeModal();
-                }}
-              >
-                <Text style={styles.addToBasketText}>Səbətə əlavə et</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </BottomSheetView>
-      </BottomSheet>
-    </KeyboardAvoidingView>
+                <Text style={styles.productTitle}>{selectedProduct.title}</Text>
+                <Text style={styles.productDescription}>
+                  {selectedProduct.description}
+                </Text>
+                <Text style={styles.productPriceLarge}>
+                  {selectedProduct.price} AZN
+                </Text>
+                <TouchableOpacity
+                  style={styles.addToBasketButton}
+                  onPress={async () => {
+                    await addToBasket(selectedProduct.id, {
+                      product_id: selectedProduct.id,
+                      quantity: 1,
+                    });
+                    closeModal();
+                  }}
+                >
+                  <Text style={styles.addToBasketText}>Səbətə əlavə et</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </BottomSheetView>
+        </BottomSheet>
+      </KeyboardAvoidingView>
+    </SafeAreaWrapper>
   );
 };
 
