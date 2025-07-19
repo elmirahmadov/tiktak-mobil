@@ -11,6 +11,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useBasketStore } from '../../common/store/Basket';
 import { StackNavigationProp } from '@react-navigation/stack';
+import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 export type BasketItem = {
   product_id: number;
@@ -93,7 +94,7 @@ const BasketScreen: React.FC<BasketScreenProps> = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaWrapper>
       <View style={styles.headerRowCentered}>
         <View style={{ width: 32, alignItems: 'flex-start' }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -154,7 +155,7 @@ const BasketScreen: React.FC<BasketScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         </>
       )}
-    </View>
+    </SafeAreaWrapper>
   );
 };
 

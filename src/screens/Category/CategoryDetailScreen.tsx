@@ -28,6 +28,7 @@ import BottomSheet, {
   BottomSheetView,
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
+import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const CARD_HORIZONTAL_PADDING = 16;
 const CARD_GAP = 12;
@@ -236,7 +237,7 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaWrapper>
       <View style={styles.headerWrapper}>
         <Header navigation={navigation} />
       </View>
@@ -466,7 +467,7 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
           )}
         </BottomSheetView>
       </BottomSheet>
-    </View>
+    </SafeAreaWrapper>
   );
 };
 

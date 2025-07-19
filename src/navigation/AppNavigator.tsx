@@ -16,6 +16,7 @@ import AccountInfoScreen from '../screens/Profile/AccountInfoScreen';
 import OrderHistoryScreen from '../screens/Order/OrderHistoryScreen';
 import FavoriteScreen from '../screens/Favorite/FavoriteScreen';
 import { setNavigationRef } from '../common/helpers/instance';
+import SafeAreaWrapper from '../common/components/SafeAreaWrapper';
 
 const Stack = createStackNavigator();
 
@@ -46,25 +47,30 @@ export default function AppNavigator() {
   }
 
   return (
-    <NavigationContainer ref={navigationRef}>
-      <Stack.Navigator
-        initialRouteName={initialRoute}
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="CategoryDetail" component={CategoryDetailScreen} />
-        <Stack.Screen name="Basket" component={BasketScreen} />
-        <Stack.Screen name="Checkout" component={CheckoutScreen} />
-        <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
-        <Stack.Screen name="Search" component={SearchScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
-        <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
-        <Stack.Screen name="Favorite" component={FavoriteScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaWrapper>
+      <NavigationContainer ref={navigationRef}>
+        <Stack.Navigator
+          initialRouteName={initialRoute}
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="Splash" component={SplashScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen
+            name="CategoryDetail"
+            component={CategoryDetailScreen}
+          />
+          <Stack.Screen name="Basket" component={BasketScreen} />
+          <Stack.Screen name="Checkout" component={CheckoutScreen} />
+          <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
+          <Stack.Screen name="Search" component={SearchScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
+          <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
+          <Stack.Screen name="Favorite" component={FavoriteScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaWrapper>
   );
 }

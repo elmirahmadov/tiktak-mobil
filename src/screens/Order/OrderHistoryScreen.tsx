@@ -23,6 +23,7 @@ import BottomSheet, {
   BottomSheetView,
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
+import SafeAreaWrapper from '../../common/components/SafeAreaWrapper';
 
 const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -142,7 +143,7 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaWrapper>
       <View style={styles.headerRow}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={24} color="#222" />
@@ -194,7 +195,7 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
           )}
         </BottomSheetView>
       </BottomSheet>
-    </View>
+    </SafeAreaWrapper>
   );
 };
 
