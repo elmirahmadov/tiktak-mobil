@@ -52,13 +52,15 @@ const Header = ({ navigation }: { navigation?: any }) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: {},
+  safeArea: {
+    backgroundColor: '#fff',
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingBottom: 8,
+    paddingVertical: 12,
     backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOpacity: 0.08,

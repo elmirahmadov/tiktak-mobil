@@ -79,7 +79,6 @@ instance.interceptors.response.use(
         const { actions, refreshToken } = useAuthStore.getState();
 
         if (refreshToken) {
-          // Refresh token ile yeni token al
           await actions.refreshToken({ refresh_token: refreshToken });
           const newToken = useAuthStore.getState().accessToken;
 
@@ -95,7 +94,6 @@ instance.interceptors.response.use(
         processQueue(e, null);
         isRefreshing = false;
 
-        // Refresh token başarısız, logout yap
         const { actions } = useAuthStore.getState();
         await actions.logout();
         if (navigationRef) {

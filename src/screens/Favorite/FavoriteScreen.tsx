@@ -18,7 +18,6 @@ import BottomSheet, {
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 
-const defaultProductImage = require('../../images/image/splash.png');
 const CARD_GAP = 12;
 const CARD_HORIZONTAL_PADDING = 16;
 const CARD_WIDTH =
@@ -151,11 +150,15 @@ const SiyahilarimScreen = ({ navigation }: { navigation: any }) => {
         activeOpacity={0.9}
       >
         <View style={styles.productCard}>
-          <Image
-            source={item.img_url ? { uri: item.img_url } : defaultProductImage}
-            style={styles.productImage}
-            resizeMode="contain"
-          />
+          {item.img_url ? (
+            <Image
+              source={{ uri: item.img_url }}
+              style={styles.productImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.productImage} />
+          )}
           <Text style={styles.productName} numberOfLines={2}>
             {item.title || item.name}
           </Text>
@@ -295,15 +298,19 @@ const SiyahilarimScreen = ({ navigation }: { navigation: any }) => {
                 />
               </TouchableOpacity>
 
-              <Image
-                source={
-                  selectedProduct.img_url
-                    ? { uri: selectedProduct.img_url }
-                    : defaultProductImage
-                }
-                style={styles.productImageLarge}
-                resizeMode="contain"
-              />
+              {selectedProduct.img_url || selectedProduct.image ? (
+                <Image
+                  source={
+                    selectedProduct.img_url
+                      ? { uri: selectedProduct.img_url }
+                      : { uri: selectedProduct.image }
+                  }
+                  style={styles.productImageLarge}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={styles.productImageLarge} />
+              )}
 
               <Text style={styles.productTitle}>
                 {selectedProduct.title || selectedProduct.name}{' '}
@@ -380,7 +387,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginTop: 8,
     marginBottom: 8,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#ffffff',
+    overflow: 'hidden',
   },
   productImageLarge: {
     width: 200,
@@ -388,7 +396,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginTop: 16,
     marginBottom: 16,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#ffffff',
+    overflow: 'hidden',
   },
   productName: {
     fontSize: 16,

@@ -28,8 +28,6 @@ import BottomSheet, {
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 
-const defaultProductImage = require('../../images/image/splash.png');
-
 const SearchScreen = ({ navigation }: { navigation: any }) => {
   const allProducts = useProductsStore(state => state.products);
   const productsLoading = useProductsStore(state => state.loading);
@@ -98,18 +96,24 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
       ? { uri: item.img_url }
       : item.image
       ? { uri: item.image }
-      : defaultProductImage;
+      : null;
     return (
       <TouchableOpacity
         onPress={() => handleProductPress(item)}
         activeOpacity={0.9}
       >
         <View style={styles.productRow}>
-          <Image
-            source={imageSource}
-            style={styles.productImage}
-            resizeMode="contain"
-          />
+          <View style={styles.imageContainer}>
+            {imageSource ? (
+              <Image
+                source={imageSource}
+                style={styles.productImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={styles.productImage} />
+            )}
+          </View>
           <View style={styles.productInfo}>
             <Text style={styles.productName} numberOfLines={2}>
               {item.title || item.name}
@@ -210,15 +214,19 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                 />
               </TouchableOpacity>
 
-              <Image
-                source={
-                  selectedProduct.img_url
-                    ? { uri: selectedProduct.img_url }
-                    : defaultProductImage
-                }
-                style={styles.productImageLarge}
-                resizeMode="contain"
-              />
+              {selectedProduct.img_url || selectedProduct.image ? (
+                <Image
+                  source={
+                    selectedProduct.img_url
+                      ? { uri: selectedProduct.img_url }
+                      : { uri: selectedProduct.image }
+                  }
+                  style={styles.productImageLarge}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={styles.productImageLarge} />
+              )}
 
               <Text style={styles.productTitle}>{selectedProduct.title}</Text>
               <Text style={styles.productDescription}>
@@ -277,12 +285,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 10,
   },
-  productImage: {
+  imageContainer: {
     width: 48,
     height: 48,
     borderRadius: 8,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#ffffff',
     marginRight: 12,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  productImage: {
+    width: '100%',
+    height: '100%',
   },
   productInfo: {
     flex: 1,
@@ -336,6 +351,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 16,
     marginTop: 16,
+    backgroundColor: '#ffffff',
+    overflow: 'hidden',
   },
   productTitle: {
     fontWeight: 'bold',
