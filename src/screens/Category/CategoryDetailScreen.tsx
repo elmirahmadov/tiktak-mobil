@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   View,
   Text,
@@ -18,7 +24,10 @@ import { useBasketStore } from '../../common/store/Basket';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Modal from 'react-native-modal';
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
 
 const defaultProductImage = require('../../images/image/splash.png');
 
@@ -60,17 +69,41 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
   );
 
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['40%', '65%'], []);
 
   const handleProductPress = (product: any) => {
     setSelectedProduct(product);
-    setModalVisible(true);
+    setIsBottomSheetOpen(true);
+    bottomSheetRef.current?.expand();
   };
 
   const closeModal = () => {
-    setModalVisible(false);
     setSelectedProduct(null);
+    setIsBottomSheetOpen(false);
+    bottomSheetRef.current?.close();
   };
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.85}
+        enableTouchThrough={false}
+        pressBehavior="close"
+        style={[
+          props.style,
+          {
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          },
+        ]}
+      />
+    ),
+    [],
+  );
 
   const isFavorite = (product: any) => {
     return favorites.includes(product.id);
@@ -216,7 +249,9 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
 
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} />
+      <View style={styles.headerWrapper}>
+        <Header navigation={navigation} />
+      </View>
       <View style={styles.stickyTop}>
         <TouchableOpacity
           style={styles.mainCategoryButton}
@@ -341,153 +376,113 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
 
       {basketCount > 0 && (
         <View style={styles.absoluteOrderBoxWrapper} pointerEvents="box-none">
-          <TouchableOpacity
-            style={styles.orderBoxWrapper}
-            activeOpacity={0.85}
-            onPress={() => navigation.navigate('Basket')}
-          >
-            <View style={styles.orderBox}>
-              <View style={styles.orderBoxLeft}>
-                <View style={styles.orderBoxCircle}>
-                  <Text style={styles.orderBoxCircleText}>{basketCount}</Text>
+          {!isBottomSheetOpen && (
+            <TouchableOpacity
+              style={styles.orderBoxWrapper}
+              activeOpacity={0.85}
+              onPress={() => navigation.navigate('Basket')}
+            >
+              <View style={styles.orderBox}>
+                <View style={styles.orderBoxLeft}>
+                  <View style={styles.orderBoxCircle}>
+                    <Text style={styles.orderBoxCircleText}>{basketCount}</Text>
+                  </View>
+                  <Text style={styles.orderBoxLabel}>Sifarişlər</Text>
                 </View>
-                <Text style={styles.orderBoxLabel}>Sifarişlər</Text>
+                <View style={styles.orderBoxRight}>
+                  <Text style={styles.orderBoxPrice}>
+                    ₼ {basketTotal.toFixed(2)}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.orderBoxRight}>
-                <Text style={styles.orderBoxPrice}>
-                  ₼ {basketTotal.toFixed(2)}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          )}
         </View>
       )}
       <View style={{ backgroundColor: '#fff' }}>
         <Footer navigation={navigation} active="Home" />
       </View>
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={closeModal}
-        style={{ justifyContent: 'flex-end', margin: 0 }}
-        animationIn="fadeIn"
-        animationOut="fadeOut"
-        animationInTiming={300}
-        animationOutTiming={300}
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        backdropComponent={renderBackdrop}
+        style={{ zIndex: 50 }}
+        backgroundStyle={{
+          backgroundColor: '#fff',
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: '#E0E0E0',
+        }}
+        onClose={() => {
+          setSelectedProduct(null);
+          setIsBottomSheetOpen(false);
+        }}
+        onAnimate={(fromIndex, toIndex) => {
+          if (toIndex === -1) {
+            setIsBottomSheetOpen(false);
+          }
+        }}
       >
-        {selectedProduct && (
-          <View
-            style={{
-              backgroundColor: '#fff',
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              padding: 24,
-              alignItems: 'center',
-              position: 'relative',
-            }}
-          >
-            <View
-              style={{
-                width: 48,
-                height: 4,
-                borderRadius: 2,
-                backgroundColor: '#E0E0E0',
-                alignSelf: 'center',
-                marginBottom: 16,
-                marginTop: 4,
-              }}
-            />
+        <BottomSheetView style={styles.bottomSheetContent}>
+          {selectedProduct && (
+            <View style={styles.productDetailContainer}>
+              <TouchableOpacity
+                style={styles.favoriteButton}
+                activeOpacity={0.7}
+                onPress={() => toggleFavorite(selectedProduct.id)}
+              >
+                <AntDesign
+                  name="hearto"
+                  size={28}
+                  color={isFavorite(selectedProduct) ? '#F44336' : '#BDBDBD'}
+                />
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={{
-                position: 'absolute',
-                top: 24,
-                right: 24,
-                zIndex: 2,
-              }}
-              activeOpacity={0.7}
-              onPress={() => toggleFavorite(selectedProduct.id)}
-            >
-              <AntDesign
-                name="hearto"
-                size={28}
-                color={isFavorite(selectedProduct) ? '#F44336' : '#BDBDBD'}
+              <Image
+                source={
+                  selectedProduct.img_url
+                    ? { uri: selectedProduct.img_url }
+                    : defaultProductImage
+                }
+                style={styles.productImageLarge}
+                resizeMode="contain"
               />
-            </TouchableOpacity>
-            <Image
-              source={
-                selectedProduct.img_url
-                  ? { uri: selectedProduct.img_url }
-                  : defaultProductImage
-              }
-              style={{
-                width: 140,
-                height: 140,
-                borderRadius: 16,
-                marginBottom: 16,
-                marginTop: 16,
-              }}
-              resizeMode="contain"
-            />
-            <Text
-              style={{
-                fontWeight: 'bold',
-                fontSize: 20,
-                marginBottom: 8,
-                textAlign: 'center',
-              }}
-            >
-              {selectedProduct.title || selectedProduct.name}{' '}
-              {selectedProduct.unit ? selectedProduct.unit : ''}
-            </Text>
-            <Text
-              style={{
-                color: '#888',
-                fontSize: 15,
-                marginBottom: 16,
-                textAlign: 'center',
-              }}
-            >
-              {selectedProduct.description ||
-                'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'}
-            </Text>
-            <Text
-              style={{
-                fontWeight: 'bold',
-                fontSize: 24,
-                marginBottom: 24,
-                textAlign: 'center',
-              }}
-            >
-              {selectedProduct.price} AZN
-            </Text>
-            <TouchableOpacity
-              style={{
-                backgroundColor: '#76CB4F',
-                borderRadius: 8,
-                paddingVertical: 14,
-                paddingHorizontal: 32,
-                minWidth: 220,
-                alignItems: 'center',
-                marginBottom: 8,
-              }}
-              onPress={() => {
-                handleAddToBasket(selectedProduct);
-                closeModal();
-              }}
-            >
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 17 }}>
-                Səbətə əlavə et
+
+              <Text style={styles.productTitle}>
+                {selectedProduct.title || selectedProduct.name}{' '}
+                {selectedProduct.unit ? selectedProduct.unit : ''}
               </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </Modal>
+              <Text style={styles.productDescription}>
+                {selectedProduct.description ||
+                  'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'}
+              </Text>
+              <Text style={styles.productPriceLarge}>
+                {selectedProduct.price} AZN
+              </Text>
+              <TouchableOpacity
+                style={styles.addToBasketButton}
+                onPress={() => {
+                  handleAddToBasket(selectedProduct);
+                  closeModal();
+                }}
+              >
+                <Text style={styles.addToBasketTextLarge}>Səbətə əlavə et</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </BottomSheetView>
+      </BottomSheet>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
+  headerWrapper: {
+    zIndex: 0,
+  },
   headerBox: {
     backgroundColor: '#E6F4EA',
     margin: 16,
@@ -585,6 +580,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: '#f2f2f2',
   },
+  productImageLarge: {
+    width: 200,
+    height: 200,
+    borderRadius: 20,
+    marginTop: 16,
+    marginBottom: 16,
+    backgroundColor: '#f2f2f2',
+  },
   productName: {
     fontSize: 16,
     color: '#222',
@@ -623,6 +626,12 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     minHeight: 24,
   },
+  productPriceLarge: {
+    fontSize: 24,
+    color: '#222',
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
   addToBasketBtn: {
     backgroundColor: '#76CB4F',
     borderRadius: 8,
@@ -639,6 +648,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 15,
+    textAlign: 'center',
+    letterSpacing: 0.2,
+  },
+  addToBasketTextLarge: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18,
     textAlign: 'center',
     letterSpacing: 0.2,
   },
@@ -686,7 +702,6 @@ const styles = StyleSheet.create({
   },
   stickyTop: {
     backgroundColor: '#fff',
-    zIndex: 2,
     paddingBottom: 12,
     paddingTop: 12,
   },
@@ -712,7 +727,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 70,
-    zIndex: 20,
+    zIndex: 10,
     alignItems: 'center',
   },
   orderBox: {
@@ -795,6 +810,52 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     marginBottom: 12,
     minHeight: 280,
+  },
+  bottomSheetContent: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  productDetailContainer: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 24,
+    position: 'relative',
+  },
+  handle: {
+    width: 48,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#E0E0E0',
+    alignSelf: 'center',
+    marginBottom: 16,
+    marginTop: 4,
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    zIndex: 2,
+  },
+  productTitle: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  productDescription: {
+    color: '#888',
+    fontSize: 15,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  addToBasketButton: {
+    backgroundColor: '#76CB4F',
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    minWidth: 220,
+    alignItems: 'center',
+    marginBottom: 8,
   },
 });
 

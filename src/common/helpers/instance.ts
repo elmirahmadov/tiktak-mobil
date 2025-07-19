@@ -34,6 +34,21 @@ export const setNavigationRef = (ref: any) => {
   navigationRef = ref;
 };
 
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
 instance.interceptors.response.use(
   response => response,
   async error => {
@@ -41,9 +56,46 @@ instance.interceptors.response.use(
       error.response &&
       error.response.status === 401 &&
       error.config &&
-      error.config.url !== '/api/tiktak/auth/login'
+      error.config.url !== '/api/tiktak/auth/login' &&
+      error.config.url !== '/api/tiktak/auth/refresh'
     ) {
+      const originalRequest = error.config;
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(token => {
+            originalRequest.headers['Authorization'] = `Bearer ${token}`;
+            return instance(originalRequest);
+          })
+          .catch(err => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
       try {
+        const { actions, refreshToken } = useAuthStore.getState();
+
+        if (refreshToken) {
+          // Refresh token ile yeni token al
+          await actions.refreshToken({ refresh_token: refreshToken });
+          const newToken = useAuthStore.getState().accessToken;
+
+          processQueue(null, newToken);
+          originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+
+          isRefreshing = false;
+          return instance(originalRequest);
+        } else {
+          throw new Error('Refresh token bulunamadı');
+        }
+      } catch (e) {
+        processQueue(e, null);
+        isRefreshing = false;
+
+        // Refresh token başarısız, logout yap
         const { actions } = useAuthStore.getState();
         await actions.logout();
         if (navigationRef) {
@@ -54,7 +106,7 @@ instance.interceptors.response.use(
             }),
           );
         }
-      } catch (e) {}
+      }
     }
     return Promise.reject(error);
   },

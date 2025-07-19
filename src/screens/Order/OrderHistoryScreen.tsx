@@ -1,4 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   View,
   Text,
@@ -10,16 +16,33 @@ import {
   ScrollView,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import Modal from 'react-native-modal';
 import Footer from '../../common/components/Footer';
 import { getOrders } from '../../common/services/api/order.api';
 import { getOrderDetail } from '../../common/services/api/order.api';
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
 
 const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['40%', '65%'], []);
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+      />
+    ),
+    [],
+  );
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -48,7 +71,10 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
       <TouchableOpacity
         style={styles.itemRow}
         activeOpacity={0.7}
-        onPress={() => setSelectedOrderId(item.id)}
+        onPress={() => {
+          setSelectedOrderId(item.id);
+          bottomSheetRef.current?.expand();
+        }}
       >
         <View style={styles.leftCol}>
           <Text style={styles.noLabel}>No</Text>
@@ -103,22 +129,28 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
         />
       )}
       <Footer navigation={navigation} active="Profile" />
-      <Modal
-        isVisible={!!selectedOrderId}
-        onBackdropPress={() => setSelectedOrderId(null)}
-        onBackButtonPress={() => setSelectedOrderId(null)}
-        style={styles.modal}
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        backdropComponent={renderBackdrop}
+        onClose={() => {
+          setSelectedOrderId(null);
+        }}
       >
-        <View style={styles.modalContent}>
-          <View style={styles.modalHandle} />
+        <BottomSheetView style={styles.bottomSheetContent}>
           {selectedOrderId && (
             <OrderDetailModal
               orderId={selectedOrderId}
-              onClose={() => setSelectedOrderId(null)}
+              onClose={() => {
+                setSelectedOrderId(null);
+                bottomSheetRef.current?.close();
+              }}
             />
           )}
-        </View>
-      </Modal>
+        </BottomSheetView>
+      </BottomSheet>
     </View>
   );
 };
@@ -793,6 +825,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#76CB4F',
     fontWeight: 'bold',
+  },
+  bottomSheetContent: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  handle: {
+    width: 48,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#E0E0E0',
+    alignSelf: 'center',
+    marginBottom: 8,
+    marginTop: 4,
   },
 });
 

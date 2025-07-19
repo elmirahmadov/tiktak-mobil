@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View,
   TouchableOpacity,
   Text,
   StyleSheet,
   Keyboard,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 
@@ -35,7 +35,7 @@ const Footer = ({ navigation, active }: FooterProps) => {
   if (isKeyboardVisible) return null;
 
   return (
-    <View style={styles.footer}>
+    <SafeAreaView style={styles.footer}>
       <TouchableOpacity
         style={styles.tab}
         onPress={() => navigation.navigate('Home')}
@@ -90,7 +90,7 @@ const Footer = ({ navigation, active }: FooterProps) => {
           Hesabım
         </Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 100,
+    zIndex: 10,
   },
   tab: {
     alignItems: 'center',

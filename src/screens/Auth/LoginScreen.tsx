@@ -35,13 +35,9 @@ export default function LoginScreen({ navigation, route }: any) {
     await actions.login(
       { phone: cleanPhoneNumber(phone), password },
       () => {
-        navigation.navigate('Home');
+        navigation.replace('Home');
       },
-      _err => {
-        // Store'daki Toast mesajı yeterli olduğu için burada
-        // ekstra Toast göstermeye gerek yok
-        // Toast.show({ type: 'error', text1: 'Şifrə və ya telefon yanlış!' });
-      },
+      _err => {},
     );
   };
 

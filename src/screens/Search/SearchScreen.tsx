@@ -1,4 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   View,
   Text,
@@ -15,9 +21,12 @@ import Header from '../../common/components/Header';
 import Footer from '../../common/components/Footer';
 import { useProductsStore } from '../../common/store/Products';
 import { useBasketStore } from '../../common/store/Basket';
-import Modal from 'react-native-modal';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
 
 const defaultProductImage = require('../../images/image/splash.png');
 
@@ -35,20 +44,33 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [isModalVisible, setModalVisible] = useState(false);
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['40%', '65%'], []);
 
   const handleProductPress = (product: any) => {
     Keyboard.dismiss();
     setTimeout(() => {
       setSelectedProduct(product);
-      setModalVisible(true);
+      bottomSheetRef.current?.expand();
     }, 100);
   };
 
   const closeModal = () => {
-    setModalVisible(false);
     setSelectedProduct(null);
+    bottomSheetRef.current?.close();
   };
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+      />
+    ),
+    [],
+  );
 
   useEffect(() => {
     resetProducts();
@@ -157,132 +179,70 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
         keyboardShouldPersistTaps="handled"
       />
       <Footer navigation={navigation} active="Search" />
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={closeModal}
-        style={{ justifyContent: 'flex-end', margin: 0 }}
-        animationIn="fadeIn"
-        animationOut="fadeOut"
-        animationInTiming={300}
-        animationOutTiming={300}
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        backdropComponent={renderBackdrop}
+        onClose={() => {
+          setSelectedProduct(null);
+        }}
       >
-        {selectedProduct && (
-          <View
-            style={{
-              backgroundColor: '#fff',
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              padding: 24,
-              alignItems: 'center',
-              position: 'relative',
-            }}
-          >
-            <View
-              style={{
-                width: 48,
-                height: 4,
-                borderRadius: 2,
-                backgroundColor: '#E0E0E0',
-                alignSelf: 'center',
-                marginBottom: 16,
-                marginTop: 4,
-              }}
-            />
+        <BottomSheetView style={styles.bottomSheetContent}>
+          {selectedProduct && (
+            <View style={styles.productDetailContainer}>
+              <TouchableOpacity
+                style={styles.favoriteButton}
+                activeOpacity={0.7}
+                onPress={async () => {
+                  await toggleFavorite(selectedProduct.id);
+                }}
+              >
+                <AntDesign
+                  name="hearto"
+                  size={28}
+                  color={
+                    favorites.includes(Number(selectedProduct.id))
+                      ? '#F44336'
+                      : '#BDBDBD'
+                  }
+                />
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={{
-                position: 'absolute',
-                top: 24,
-                right: 24,
-                zIndex: 2,
-              }}
-              activeOpacity={0.7}
-              onPress={async () => {
-                await toggleFavorite(selectedProduct.id);
-              }}
-            >
-              <AntDesign
-                name="hearto"
-                size={28}
-                color={
-                  favorites.includes(Number(selectedProduct.id))
-                    ? '#F44336'
-                    : '#BDBDBD'
+              <Image
+                source={
+                  selectedProduct.img_url
+                    ? { uri: selectedProduct.img_url }
+                    : defaultProductImage
                 }
+                style={styles.productImageLarge}
+                resizeMode="contain"
               />
-            </TouchableOpacity>
-            <Image
-              source={
-                selectedProduct.img_url
-                  ? { uri: selectedProduct.img_url }
-                  : defaultProductImage
-              }
-              style={{
-                width: 140,
-                height: 140,
-                borderRadius: 16,
-                marginBottom: 16,
-                marginTop: 16,
-              }}
-              resizeMode="contain"
-            />
-            <Text
-              style={{
-                fontWeight: 'bold',
-                fontSize: 20,
-                marginBottom: 8,
-                textAlign: 'center',
-              }}
-            >
-              {selectedProduct.title || selectedProduct.name}{' '}
-              {selectedProduct.unit ? selectedProduct.unit : ''}
-            </Text>
-            <Text
-              style={{
-                color: '#888',
-                fontSize: 15,
-                marginBottom: 16,
-                textAlign: 'center',
-              }}
-            >
-              {selectedProduct.description ||
-                'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'}
-            </Text>
-            <Text
-              style={{
-                fontWeight: 'bold',
-                fontSize: 24,
-                marginBottom: 24,
-                textAlign: 'center',
-              }}
-            >
-              {selectedProduct.price} AZN
-            </Text>
-            <TouchableOpacity
-              style={{
-                backgroundColor: '#76CB4F',
-                borderRadius: 8,
-                paddingVertical: 14,
-                paddingHorizontal: 32,
-                minWidth: 220,
-                alignItems: 'center',
-                marginBottom: 8,
-              }}
-              onPress={async () => {
-                await addToBasket(selectedProduct.id, {
-                  product_id: selectedProduct.id,
-                  quantity: 1,
-                });
-                setModalVisible(false);
-              }}
-            >
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 17 }}>
-                Səbətə əlavə et
+
+              <Text style={styles.productTitle}>{selectedProduct.title}</Text>
+              <Text style={styles.productDescription}>
+                {selectedProduct.description}
               </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </Modal>
+              <Text style={styles.productPriceLarge}>
+                {selectedProduct.price} AZN
+              </Text>
+              <TouchableOpacity
+                style={styles.addToBasketButton}
+                onPress={async () => {
+                  await addToBasket(selectedProduct.id, {
+                    product_id: selectedProduct.id,
+                    quantity: 1,
+                  });
+                  closeModal();
+                }}
+              >
+                <Text style={styles.addToBasketText}>Səbətə əlavə et</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </BottomSheetView>
+      </BottomSheet>
     </KeyboardAvoidingView>
   );
 };
@@ -344,6 +304,70 @@ const styles = StyleSheet.create({
     color: '#888',
     marginTop: 32,
     fontSize: 16,
+  },
+  bottomSheetContent: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  productDetailContainer: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 24,
+    position: 'relative',
+  },
+  handle: {
+    width: 48,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#E0E0E0',
+    alignSelf: 'center',
+    marginBottom: 16,
+    marginTop: 4,
+  },
+  favoriteButton: {
+    position: 'absolute',
+    top: 24,
+    right: 24,
+    zIndex: 2,
+  },
+  productImageLarge: {
+    width: 180,
+    height: 180,
+    borderRadius: 16,
+    marginBottom: 16,
+    marginTop: 16,
+  },
+  productTitle: {
+    fontWeight: 'bold',
+    fontSize: 22,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  productDescription: {
+    color: '#888',
+    fontSize: 16,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  productPriceLarge: {
+    fontWeight: 'bold',
+    fontSize: 26,
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  addToBasketButton: {
+    backgroundColor: '#76CB4F',
+    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    minWidth: 240,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  addToBasketText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18,
   },
 });
 
