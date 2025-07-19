@@ -15,8 +15,6 @@ import { useCampaignsStore } from '../../common/store/Campaigns';
 import { useCategoriesStore } from '../../common/store/Categories';
 import { useAuthStore } from '../../common/store/Auth';
 
-const productImage = require('../../images/image/splash.png');
-
 interface NavigationProps {
   navigation: any;
 }
@@ -85,19 +83,23 @@ const HomeScreen: React.FC<NavigationProps> = ({ navigation }) => {
         ? { uri: item.img_url }
         : item.image
         ? { uri: item.image }
-        : productImage;
+        : null;
       return (
         <TouchableOpacity
           style={styles.productCard}
           onPress={() => handleCategoryPress(item)}
           activeOpacity={0.7}
         >
-          <Image
-            source={imageSource}
-            style={styles.productImage}
-            resizeMode="cover"
-          />
-          <Text style={styles.productName} numberOfLines={2}>
+          {imageSource ? (
+            <Image
+              source={imageSource}
+              style={styles.productImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.productImage} />
+          )}
+          <Text style={styles.productName} numberOfLines={1}>
             {item.name || item.title}
           </Text>
         </TouchableOpacity>
@@ -212,35 +214,54 @@ const HomeScreen: React.FC<NavigationProps> = ({ navigation }) => {
           </View>
           {latestCampaign ? (
             <View style={styles.campaignBoxWrapper}>
-              <ImageBackground
-                source={
-                  latestCampaign.img_url
-                    ? { uri: latestCampaign.img_url }
-                    : productImage
-                }
-                style={styles.campaignBox}
-                imageStyle={styles.campaignImageBg}
-                resizeMode="cover"
-              >
-                <View style={styles.campaignOverlay} />
-                <View style={styles.campaignTextBox}>
-                  <Text style={styles.campaignTitle} numberOfLines={2}>
-                    {latestCampaign.title || latestCampaign.name}
-                  </Text>
-                  {latestCampaign.description ? (
-                    <Text style={styles.campaignSubtitle} numberOfLines={2}>
-                      {latestCampaign.description}
+              {latestCampaign.img_url ? (
+                <ImageBackground
+                  source={{ uri: latestCampaign.img_url }}
+                  style={styles.campaignBox}
+                  imageStyle={styles.campaignImageBg}
+                  resizeMode="cover"
+                >
+                  <View style={styles.campaignOverlay} />
+                  <View style={styles.campaignTextBox}>
+                    <Text style={styles.campaignTitle} numberOfLines={2}>
+                      {latestCampaign.title || latestCampaign.name}
                     </Text>
-                  ) : null}
-                  <Text style={styles.campaignDate}>
-                    {latestCampaign.created_at
-                      ? new Date(latestCampaign.created_at).toLocaleDateString(
-                          'tr-TR',
-                        )
-                      : ''}
-                  </Text>
+                    {latestCampaign.description ? (
+                      <Text style={styles.campaignSubtitle} numberOfLines={2}>
+                        {latestCampaign.description}
+                      </Text>
+                    ) : null}
+                    <Text style={styles.campaignDate}>
+                      {latestCampaign.created_at
+                        ? new Date(
+                            latestCampaign.created_at,
+                          ).toLocaleDateString('tr-TR')
+                        : ''}
+                    </Text>
+                  </View>
+                </ImageBackground>
+              ) : (
+                <View style={styles.campaignBox}>
+                  <View style={styles.campaignOverlay} />
+                  <View style={styles.campaignTextBox}>
+                    <Text style={styles.campaignTitle} numberOfLines={2}>
+                      {latestCampaign.title || latestCampaign.name}
+                    </Text>
+                    {latestCampaign.description ? (
+                      <Text style={styles.campaignSubtitle} numberOfLines={2}>
+                        {latestCampaign.description}
+                      </Text>
+                    ) : null}
+                    <Text style={styles.campaignDate}>
+                      {latestCampaign.created_at
+                        ? new Date(
+                            latestCampaign.created_at,
+                          ).toLocaleDateString('tr-TR')
+                        : ''}
+                    </Text>
+                  </View>
                 </View>
-              </ImageBackground>
+              )}
             </View>
           ) : (
             <View style={styles.noCampaignBox}>
@@ -415,7 +436,8 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     marginBottom: 6,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#ffffff',
+    overflow: 'hidden',
   },
   productName: {
     fontSize: 15,

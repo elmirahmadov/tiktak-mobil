@@ -5,6 +5,9 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useAuthActions, useAuthLoading } from '../../common/store/Auth';
@@ -42,57 +45,81 @@ export default function LoginScreen({ navigation, route }: any) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Daxil ol</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Telefon"
-        value={phone}
-        onChangeText={handlePhoneChange}
-        keyboardType="phone-pad"
-        onFocus={() => {
-          if (!phone) setPhone('(+994) ');
-        }}
-      />
-      <View style={styles.inputWrapper}>
-        <TextInput
-          style={styles.inputInner}
-          placeholder="Parol"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
-          autoCapitalize="none"
-        />
-        <TouchableOpacity
-          style={styles.iconContainer}
-          onPress={() => setShowPassword(v => !v)}
-          activeOpacity={0.7}
-        >
-          <Icon
-            name={showPassword ? 'eye-off' : 'eye'}
-            size={22}
-            color="#7BC142"
-          />
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleLogin}
-        disabled={loading}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.buttonText}>
-          {loading ? 'Daxil olunur...' : 'Daxil ol'}
+        <Text style={styles.title}>Daxil ol</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Telefon"
+          value={phone}
+          onChangeText={handlePhoneChange}
+          keyboardType="phone-pad"
+          onFocus={() => {
+            if (!phone) setPhone('(+994) ');
+          }}
+        />
+        <View style={styles.inputWrapper}>
+          <TextInput
+            style={styles.inputInner}
+            placeholder="Parol"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
+          />
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => setShowPassword(v => !v)}
+            activeOpacity={0.7}
+          >
+            <Icon
+              name={showPassword ? 'eye-off' : 'eye'}
+              size={22}
+              color="#76CB4F"
+            />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? 'Daxil olunur...' : 'Daxil ol'}
+          </Text>
+        </TouchableOpacity>
+        <Text style={styles.registerText}>
+          Hesabınız yoxdursa{' '}
+          <Text
+            style={styles.registerLink}
+            onPress={() => navigation.navigate('Register')}
+          >
+            Qeydiyyatdan keç
+          </Text>
         </Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.link}>Qeydiyyatdan keç</Text>
-      </TouchableOpacity>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24 },
+  container: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingVertical: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -107,7 +134,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
     color: '#232A36',
-    backgroundColor: '#fff',
+    backgroundColor: '#F6F5FB',
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -116,7 +143,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     marginBottom: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#F6F5FB',
   },
   inputInner: {
     flex: 1,
@@ -132,12 +159,21 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   button: {
-    backgroundColor: '#7BC142',
+    backgroundColor: '#76CB4F',
     borderRadius: 8,
     padding: 16,
     alignItems: 'center',
     marginBottom: 12,
   },
   buttonText: { color: '#fff', fontWeight: 'bold' },
-  link: { color: '#7BC142', textAlign: 'center', marginTop: 8 },
+  registerText: {
+    color: '#222',
+    textAlign: 'center',
+    marginTop: 8,
+    fontSize: 15,
+  },
+  registerLink: {
+    color: '#76CB4F',
+    fontWeight: 'bold',
+  },
 });

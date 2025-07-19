@@ -29,8 +29,6 @@ import BottomSheet, {
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 
-const defaultProductImage = require('../../images/image/splash.png');
-
 const CARD_HORIZONTAL_PADDING = 16;
 const CARD_GAP = 12;
 const CARD_WIDTH =
@@ -146,15 +144,6 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
     [basketItems],
   );
 
-  const getUnitLabel = (type: string) => {
-    if (!type) return '';
-    if (type === 'litre') return 'kq';
-    if (type === 'piece') return 'əd';
-    if (type === 'packet') return 'paket';
-    if (type === 'box') return 'box';
-    return type;
-  };
-
   const handleAddToBasket = useCallback(
     (product: any) => {
       addToBasket(product.id, { product_id: product.id, quantity: 1 });
@@ -175,12 +164,11 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
 
   const renderProductCard = ({ item }: { item: any }) => {
     const quantity = getProductQuantity(item.id);
-    const unit = getUnitLabel(item.type);
     const imageSource = item.img_url
       ? { uri: item.img_url }
       : item.image
       ? { uri: item.image }
-      : defaultProductImage;
+      : null;
     const price = Number(item.price);
     const totalPrice = (price * quantity).toFixed(2);
     return (
@@ -189,50 +177,50 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
         activeOpacity={0.9}
       >
         <View style={styles.productCard}>
-          <Image
-            source={imageSource}
-            style={styles.productImage}
-            resizeMode="contain"
-          />
+          {imageSource ? (
+            <Image
+              source={imageSource}
+              style={styles.productImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.productImage} />
+          )}
           <Text style={styles.productName} numberOfLines={2}>
             {item.title || item.name}
           </Text>
-          <Text style={styles.productUnit}>{item.unit || `1 ${unit}`}</Text>
-          <View style={styles.priceAndButtonArea}>
-            {quantity > 0 ? (
-              <Text style={styles.productPriceRow}>
-                <Text style={styles.productQtyRed}>
-                  {quantity} {unit} ={' '}
-                </Text>
-                <Text style={styles.productPrice}>{totalPrice} AZN</Text>
-              </Text>
-            ) : (
-              <Text style={styles.productPrice}>{item.price} AZN</Text>
-            )}
-            {quantity > 0 ? (
-              <View style={styles.basketControlsRow}>
-                <TouchableOpacity
-                  style={[styles.basketBtn, styles.basketBtnMinus]}
-                  onPress={() => handleRemoveFromBasket(item)}
-                >
-                  <MaterialCommunityIcons name="minus" size={18} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.basketBtn, { backgroundColor: '#76CB4F' }]}
-                  onPress={() => handleAddToBasket(item)}
-                >
-                  <MaterialCommunityIcons name="plus" size={22} color="#fff" />
-                </TouchableOpacity>
-              </View>
-            ) : (
+          <Text style={styles.productUnit}>{item.unit || '1 kq'}</Text>
+          {quantity > 0 ? (
+            <Text style={styles.productPriceRow}>
+              <Text style={styles.productQtyRed}>{quantity} kq = </Text>
+              <Text style={styles.productPrice}>{totalPrice} AZN</Text>
+            </Text>
+          ) : (
+            <Text style={styles.productPrice}>{item.price} AZN</Text>
+          )}
+          {quantity > 0 ? (
+            <View style={styles.basketControlsRow}>
               <TouchableOpacity
-                style={styles.addToBasketBtn}
+                style={[styles.basketBtn, styles.basketBtnMinus]}
+                onPress={() => handleRemoveFromBasket(item)}
+              >
+                <MaterialCommunityIcons name="minus" size={18} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.basketBtn, { backgroundColor: '#76CB4F' }]}
                 onPress={() => handleAddToBasket(item)}
               >
-                <Text style={styles.addToBasketText}>Səbətə əlavə et</Text>
+                <MaterialCommunityIcons name="plus" size={22} color="#fff" />
               </TouchableOpacity>
-            )}
-          </View>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.addToBasketBtn}
+              onPress={() => handleAddToBasket(item)}
+            >
+              <Text style={styles.addToBasketText}>Səbətə əlavə et</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </TouchableOpacity>
     );
@@ -440,15 +428,19 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
                 />
               </TouchableOpacity>
 
-              <Image
-                source={
-                  selectedProduct.img_url
-                    ? { uri: selectedProduct.img_url }
-                    : defaultProductImage
-                }
-                style={styles.productImageLarge}
-                resizeMode="contain"
-              />
+              {selectedProduct.img_url || selectedProduct.image ? (
+                <Image
+                  source={
+                    selectedProduct.img_url
+                      ? { uri: selectedProduct.img_url }
+                      : { uri: selectedProduct.image }
+                  }
+                  style={styles.productImageLarge}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={styles.productImageLarge} />
+              )}
 
               <Text style={styles.productTitle}>
                 {selectedProduct.title || selectedProduct.name}{' '}
@@ -578,7 +570,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginTop: 8,
     marginBottom: 8,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#ffffff',
+    overflow: 'hidden',
   },
   productImageLarge: {
     width: 200,
@@ -586,7 +579,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginTop: 16,
     marginBottom: 16,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#ffffff',
+    overflow: 'hidden',
   },
   productName: {
     fontSize: 16,

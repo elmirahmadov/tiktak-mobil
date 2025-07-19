@@ -67,6 +67,45 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
       item.adres ||
       item.location ||
       'Çatdırılma ünvanı yoxdur';
+
+    const getStatusText = (status: string) => {
+      switch (status) {
+        case 'PENDING':
+          return 'Gözləmədə';
+        case 'ACCEPTED':
+          return 'Sifariş qəbul edilib';
+        case 'PROCESSING':
+          return 'Hazırlanır';
+        case 'SHIPPED':
+          return 'Göndərilib';
+        case 'DELIVERED':
+          return 'Çatdırılıb';
+        case 'CANCELLED':
+          return 'Ləğv edilib';
+        default:
+          return status || 'Bilinmir';
+      }
+    };
+
+    const getStatusColor = (status: string) => {
+      switch (status) {
+        case 'PENDING':
+          return '#FFA500';
+        case 'ACCEPTED':
+          return '#76CB4F';
+        case 'PROCESSING':
+          return '#2196F3';
+        case 'SHIPPED':
+          return '#9C27B0';
+        case 'DELIVERED':
+          return '#4CAF50';
+        case 'CANCELLED':
+          return '#F44336';
+        default:
+          return '#888';
+      }
+    };
+
     return (
       <TouchableOpacity
         style={styles.itemRow}
@@ -77,9 +116,13 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
         }}
       >
         <View style={styles.leftCol}>
-          <Text style={styles.noLabel}>No</Text>
           <Text style={styles.noValue}>
             {item.orderNumber ? item.orderNumber : `#${item.id}`}
+          </Text>
+          <Text
+            style={[styles.statusText, { color: getStatusColor(item.status) }]}
+          >
+            {getStatusText(item.status)}
           </Text>
         </View>
         <View style={styles.rightCol}>
@@ -267,6 +310,44 @@ const OrderDetailModal = ({
     ],
   ];
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'Gözləmədə';
+      case 'ACCEPTED':
+        return 'Sifariş qəbul edilib';
+      case 'PROCESSING':
+        return 'Hazırlanır';
+      case 'SHIPPED':
+        return 'Göndərilib';
+      case 'DELIVERED':
+        return 'Çatdırılıb';
+      case 'CANCELLED':
+        return 'Ləğv edilib';
+      default:
+        return status || 'Bilinmir';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return '#FFA500';
+      case 'ACCEPTED':
+        return '#76CB4F';
+      case 'PROCESSING':
+        return '#2196F3';
+      case 'SHIPPED':
+        return '#9C27B0';
+      case 'DELIVERED':
+        return '#4CAF50';
+      case 'CANCELLED':
+        return '#F44336';
+      default:
+        return '#888';
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.modalHeader}>
@@ -282,9 +363,19 @@ const OrderDetailModal = ({
             <View key={idx} style={styles.summaryRowCustom}>
               <View style={styles.summaryColCustom}>
                 <Text style={styles.summaryLabelCustom}>{row[0].label}</Text>
-                <Text style={styles.summaryValueCustom}>{row[0].value}</Text>
+                {row[0].label === 'Status' ? (
+                  <Text
+                    style={[
+                      styles.statusText,
+                      { color: getStatusColor(order.status) },
+                    ]}
+                  >
+                    {getStatusText(order.status)}
+                  </Text>
+                ) : (
+                  <Text style={styles.summaryValueCustom}>{row[0].value}</Text>
+                )}
               </View>
-
               <View style={styles.summaryColCustom}>
                 <Text style={styles.summaryLabelCustom}>{row[1].label}</Text>
                 <Text
@@ -308,15 +399,15 @@ const OrderDetailModal = ({
                   key={`item_${item.id}_${idx}`}
                   style={styles.productRowCustomNew}
                 >
-                  <Image
-                    source={
-                      item.product?.img_url
-                        ? { uri: item.product.img_url }
-                        : undefined
-                    }
-                    style={styles.productImageCustomLarge}
-                    resizeMode="cover"
-                  />
+                  {item.product?.img_url ? (
+                    <Image
+                      source={{ uri: item.product.img_url }}
+                      style={styles.productImageCustomLarge}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View style={styles.productImageCustomLarge} />
+                  )}
                   <View style={styles.productInfoStack}>
                     <Text style={styles.productNameStack} numberOfLines={1}>
                       {item.product?.title ||
@@ -396,6 +487,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#2D3651',
     fontWeight: '500',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 2,
   },
   addressLabel: {
     fontSize: 12,
@@ -740,11 +836,12 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   productImageCustomLarge: {
-    width: 70,
-    height: 70,
+    width: 80,
+    height: 80,
     borderRadius: 12,
-    marginRight: 20,
-    backgroundColor: '#f0f0f0',
+    marginRight: 12,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
   },
   productInfoCustomLeft: {
     flex: 1,
