@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { useAuthStore } from '../../common/store/Auth';
 import Feather from 'react-native-vector-icons/Feather';
-import Footer from '../../common/components/Footer';
 
 const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
   const user = useAuthStore(state => state.user);
@@ -138,7 +137,6 @@ const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <Footer navigation={navigation} active="Profile" />
     </KeyboardAvoidingView>
   );
 };

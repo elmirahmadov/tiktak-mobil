@@ -14,11 +14,8 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import Header from '../../common/components/Header';
-import Footer from '../../common/components/Footer';
 import { useProductsStore } from '../../common/store/Products';
 import { useBasketStore } from '../../common/store/Basket';
 import Feather from 'react-native-vector-icons/Feather';
@@ -51,7 +48,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
     setTimeout(() => {
       setSelectedProduct(product);
       bottomSheetRef.current?.expand();
-    }, 100);
+    }, 500);
   };
 
   const closeModal = () => {
@@ -65,6 +62,8 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
         {...props}
         disappearsOnIndex={-1}
         appearsOnIndex={0}
+        opacity={0.7}
+        style={[props.style, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
       />
     ),
     [],
@@ -126,146 +125,148 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
-        <Header navigation={navigation} />
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Axtar"
-            placeholderTextColor="#888"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
-        <FlatList
-          data={filteredProducts}
-          keyExtractor={(item, index) =>
-            item && item.id != null
-              ? String(item.id) + '-' + index
-              : String(index)
-          }
-          renderItem={renderProductRow}
-          contentContainerStyle={[styles.listContent, { paddingBottom: 80 }]}
-          ListEmptyComponent={
-            searchQuery.trim() && !productsLoading ? (
-              <View style={{ alignItems: 'center', marginTop: 40 }}>
-                <View
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 40,
-                    backgroundColor: '#F2F2F2',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginBottom: 16,
-                  }}
-                >
-                  <Feather name="x" size={48} color="#D1D1D1" />
-                </View>
-                <Text
-                  style={{
-                    color: '#D1D1D1',
-                    fontSize: 16,
-                    marginTop: 8,
-                    textAlign: 'center',
-                    fontWeight: '500',
-                  }}
-                >
-                  Axtarış nəticəsi tapılmadı
-                </Text>
-              </View>
-            ) : null
-          }
-          keyboardShouldPersistTaps="handled"
+    <View style={styles.container}>
+      <Header navigation={navigation} />
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Axtar"
+          placeholderTextColor="#888"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
-        <BottomSheet
-          ref={bottomSheetRef}
-          index={-1}
-          snapPoints={snapPoints}
-          enablePanDownToClose={true}
-          backdropComponent={renderBackdrop}
-          onClose={() => {
-            setSelectedProduct(null);
-          }}
-        >
-          <BottomSheetView style={styles.bottomSheetContent}>
-            {selectedProduct && (
-              <View style={styles.productDetailContainer}>
-                <TouchableOpacity
-                  style={styles.favoriteButton}
-                  activeOpacity={0.7}
-                  onPress={async () => {
-                    await toggleFavorite(selectedProduct.id);
-                  }}
-                >
-                  <AntDesign
-                    name="hearto"
-                    size={28}
-                    color={
-                      favorites.includes(Number(selectedProduct.id))
-                        ? '#F44336'
-                        : '#BDBDBD'
-                    }
-                  />
-                </TouchableOpacity>
-
-                {selectedProduct.img_url || selectedProduct.image ? (
-                  <Image
-                    source={
-                      selectedProduct.img_url
-                        ? { uri: selectedProduct.img_url }
-                        : { uri: selectedProduct.image }
-                    }
-                    style={styles.productImageLarge}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View style={styles.productImageLarge} />
-                )}
-
-                <Text style={styles.productTitle}>{selectedProduct.title}</Text>
-                <Text style={styles.productDescription}>
-                  {selectedProduct.description}
-                </Text>
-                <Text style={styles.productPriceLarge}>
-                  {selectedProduct.price} AZN
-                </Text>
-                <TouchableOpacity
-                  style={styles.addToBasketButton}
-                  onPress={async () => {
-                    await addToBasket(selectedProduct.id, {
-                      product_id: selectedProduct.id,
-                      quantity: 1,
-                    });
-                    closeModal();
-                  }}
-                >
-                  <Text style={styles.addToBasketText}>Səbətə əlavə et</Text>
-                </TouchableOpacity>
+      </View>
+      <FlatList
+        data={filteredProducts}
+        keyExtractor={(item, index) =>
+          item && item.id != null
+            ? String(item.id) + '-' + index
+            : String(index)
+        }
+        renderItem={renderProductRow}
+        contentContainerStyle={[styles.listContent, { paddingBottom: 80 }]}
+        style={styles.flatListStyle}
+        ListEmptyComponent={
+          searchQuery.trim() && !productsLoading ? (
+            <View style={{ alignItems: 'center', marginTop: 40 }}>
+              <View
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: '#FFFF',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginBottom: 16,
+                }}
+              >
+                <Feather name="x" size={48} color="#D1D1D1" />
               </View>
-            )}
-          </BottomSheetView>
-        </BottomSheet>
-      </KeyboardAvoidingView>
-      <Footer navigation={navigation} active="Search" />
+              <Text
+                style={{
+                  color: '#D1D1D1',
+                  fontSize: 16,
+                  marginTop: 8,
+                  textAlign: 'center',
+                  fontWeight: '500',
+                }}
+              >
+                Axtarış nəticəsi tapılmadı
+              </Text>
+            </View>
+          ) : null
+        }
+        keyboardShouldPersistTaps="handled"
+      />
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        enableContentPanningGesture={false}
+        enableHandlePanningGesture={true}
+        backdropComponent={renderBackdrop}
+        onClose={() => {
+          setSelectedProduct(null);
+        }}
+        style={styles.bottomSheetContainer}
+      >
+        <BottomSheetView style={styles.bottomSheetContent}>
+          {selectedProduct && (
+            <View style={styles.productDetailContainer}>
+              <TouchableOpacity
+                style={styles.favoriteButton}
+                activeOpacity={0.7}
+                onPress={async () => {
+                  await toggleFavorite(selectedProduct.id);
+                }}
+              >
+                <AntDesign
+                  name="hearto"
+                  size={28}
+                  color={
+                    favorites.includes(Number(selectedProduct.id))
+                      ? '#F44336'
+                      : '#BDBDBD'
+                  }
+                />
+              </TouchableOpacity>
+
+              {selectedProduct.img_url || selectedProduct.image ? (
+                <Image
+                  source={
+                    selectedProduct.img_url
+                      ? { uri: selectedProduct.img_url }
+                      : { uri: selectedProduct.image }
+                  }
+                  style={styles.productImageLarge}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={styles.productImageLarge} />
+              )}
+
+              <Text style={styles.productTitle}>{selectedProduct.title}</Text>
+              <Text style={styles.productDescription}>
+                {selectedProduct.description}
+              </Text>
+              <Text style={styles.productPriceLarge}>
+                {selectedProduct.price} AZN
+              </Text>
+              <TouchableOpacity
+                style={styles.addToBasketButton}
+                onPress={async () => {
+                  await addToBasket(selectedProduct.id, {
+                    product_id: selectedProduct.id,
+                    quantity: 1,
+                  });
+                  closeModal();
+                }}
+              >
+                <Text style={styles.addToBasketText}>Səbətə əlavə et</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </BottomSheetView>
+      </BottomSheet>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
   searchContainer: {
     marginHorizontal: 16,
     marginTop: 16,
     marginBottom: 8,
+    backgroundColor: '#ffffff',
   },
   searchInput: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#F6F5FB',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -279,10 +280,12 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 8,
   },
+  flatListStyle: {
+    backgroundColor: '#ffffff',
+  },
   productRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderRadius: 12,
     marginBottom: 12,
     padding: 10,
@@ -291,7 +294,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 8,
-    backgroundColor: '#ffffff',
     marginRight: 12,
     overflow: 'hidden',
     justifyContent: 'center',
@@ -322,15 +324,20 @@ const styles = StyleSheet.create({
     marginTop: 32,
     fontSize: 16,
   },
+
+  bottomSheetContainer: {
+    flex: 1,
+  },
   bottomSheetContent: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
   },
   productDetailContainer: {
     flex: 1,
     alignItems: 'center',
     padding: 24,
     position: 'relative',
+    backgroundColor: '#ffffff',
   },
   handle: {
     width: 48,
@@ -361,27 +368,38 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginBottom: 8,
     textAlign: 'center',
+    color: '#222',
   },
   productDescription: {
     color: '#888',
     fontSize: 16,
     marginBottom: 16,
     textAlign: 'center',
+    lineHeight: 22,
   },
   productPriceLarge: {
     fontWeight: 'bold',
     fontSize: 26,
     marginBottom: 24,
     textAlign: 'center',
+    color: '#222',
   },
   addToBasketButton: {
     backgroundColor: '#76CB4F',
-    borderRadius: 8,
+    borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 32,
     minWidth: 240,
     alignItems: 'center',
     marginBottom: 8,
+    shadowColor: '#76CB4F',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   addToBasketText: {
     color: '#fff',

@@ -10,7 +10,6 @@ import {
   ImageBackground,
 } from 'react-native';
 import Header from '../../common/components/Header';
-import Footer from '../../common/components/Footer';
 import { useCampaignsStore } from '../../common/store/Campaigns';
 import { useCategoriesStore } from '../../common/store/Categories';
 import { useAuthStore } from '../../common/store/Auth';
@@ -302,7 +301,6 @@ const HomeScreen: React.FC<NavigationProps> = ({ navigation }) => {
           </View>
         </ScrollView>
       )}
-      <Footer navigation={navigation} active="Home" />
     </View>
   );
 };

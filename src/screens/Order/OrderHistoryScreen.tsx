@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,12 +10,12 @@ import {
   ScrollView,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import Footer from '../../common/components/Footer';
 import { getOrders } from '../../common/services/api/order.api';
 import { getOrderDetail } from '../../common/services/api/order.api';
 import BottomSheet, {
   BottomSheetView,
   BottomSheetBackdrop,
+  BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 
 const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
@@ -29,9 +23,9 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['40%', '65%'], []);
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -112,6 +106,7 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
         activeOpacity={0.7}
         onPress={() => {
           setSelectedOrderId(item.id);
+          setSelectedOrder(item);
           bottomSheetRef.current?.expand();
         }}
       >
@@ -171,23 +166,40 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
           showsVerticalScrollIndicator={false}
         />
       )}
-      <Footer navigation={navigation} active="Profile" />
+
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
-        snapPoints={snapPoints}
+        snapPoints={
+          selectedOrder && selectedOrder.items
+            ? selectedOrder.items.length === 1
+              ? ['65%']
+              : selectedOrder.items.length === 2
+              ? ['75%']
+              : ['85%']
+            : ['65%']
+        }
         enablePanDownToClose={true}
+        enableDynamicSizing={false}
+        enableContentPanningGesture={false}
+        enableHandlePanningGesture={false}
         backdropComponent={renderBackdrop}
         onClose={() => {
           setSelectedOrderId(null);
+          setSelectedOrder(null);
         }}
+        keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize"
+        style={{ flex: 1 }}
       >
-        <BottomSheetView style={styles.bottomSheetContent}>
-          {selectedOrderId && (
+        <BottomSheetView style={styles.bottomSheetContainer}>
+          {selectedOrderId && selectedOrder && (
             <OrderDetailModal
               orderId={selectedOrderId}
+              initialOrder={selectedOrder}
               onClose={() => {
                 setSelectedOrderId(null);
+                setSelectedOrder(null);
                 bottomSheetRef.current?.close();
               }}
             />
@@ -200,72 +212,50 @@ const OrderHistoryScreen = ({ navigation }: { navigation: any }) => {
 
 const OrderDetailModal = ({
   orderId,
+  initialOrder,
+  onClose: _onClose,
 }: {
   orderId: number;
+  initialOrder: any;
   onClose: () => void;
 }) => {
-  const [order, setOrder] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [order, setOrder] = useState<any>(initialOrder);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setOrder(null);
     setError(null);
     const fetchDetail = async () => {
-      setLoading(true);
-      setError(null);
       try {
         const res = await getOrderDetail(orderId);
         if (res && res.data) {
           setOrder(res.data);
-        } else if (res && !res.data) {
+        } else if (
+          res &&
+          typeof res === 'object' &&
+          Object.keys(res).length > 0
+        ) {
           setOrder(res);
         } else {
           setError('Sifariş məlumatı tapılmadı');
         }
       } catch (e) {
         setError('Sifariş detayı alınamadı.');
-      } finally {
-        setLoading(false);
       }
     };
     fetchDetail();
   }, [orderId]);
-
-  if (loading) {
-    return (
-      <View style={styles.modalLoading}>
-        <ActivityIndicator size="large" color="#76CB4F" />
-        <Text style={styles.loadingText}>Sifariş yüklənir...</Text>
-      </View>
-    );
-  }
 
   if (error) {
     return (
       <View style={styles.modalLoading}>
         <Feather name="alert-circle" size={48} color="#ff6b6b" />
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity
-          style={styles.retryButton}
-          onPress={() => {
-            setLoading(true);
-            setError(null);
-          }}
-        >
-          <Text style={styles.retryButtonText}>Yenidən cəhd et</Text>
-        </TouchableOpacity>
       </View>
     );
   }
 
   if (!order) {
-    return (
-      <View style={styles.modalLoading}>
-        <Feather name="package" size={48} color="#ccc" />
-        <Text style={styles.errorText}>Sifariş tapılmadı</Text>
-      </View>
-    );
+    return null;
   }
 
   const summaryRows = [
@@ -285,7 +275,12 @@ const OrderDetailModal = ({
       { label: 'Məhsul sayı', value: order.items?.length?.toString() || '0' },
       {
         label: 'Çatdırılma ünvanı',
-        value: order.address || 'N/A',
+        value:
+          order.address ||
+          order.shipping_address ||
+          order.adres ||
+          order.location ||
+          'N/A',
         multiline: true,
       },
     ],
@@ -301,10 +296,10 @@ const OrderDetailModal = ({
       },
       {
         label: 'Subtotal/Çatdırılma',
-        value: `${order.subtotal || order.total || '0'}m/${
+        value: `${order.subtotal || order.total || '0'}₼/${
           order.deliveryFee === 0 || order.deliveryFee === '0'
             ? 'pulsuz'
-            : `${order.deliveryFee}m`
+            : `${order.deliveryFee}₼`
         }`,
       },
     ],
@@ -348,15 +343,61 @@ const OrderDetailModal = ({
     }
   };
 
+  const renderProductItem = ({ item }: { item: any }) => (
+    <View style={styles.productRowCustomNew}>
+      {item.product?.img_url ? (
+        <Image
+          source={{ uri: item.product.img_url }}
+          style={styles.productImageCustomLarge}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={[styles.productImageCustomLarge, styles.placeholderImage]}>
+          <Feather name="package" size={24} color="#ccc" />
+        </View>
+      )}
+      <View style={styles.productInfoStack}>
+        <Text style={styles.productNameStack} numberOfLines={2}>
+          {item.product?.title || item.product?.name || 'Məhsul adı yoxdur'}
+        </Text>
+        <Text style={styles.productPriceStack}>
+          {item.product?.price || '0'} ₼
+        </Text>
+        <Text style={styles.productQtyStack}>
+          {item.quantity || 1} {item.product?.unit || 'əd'}
+        </Text>
+      </View>
+      <View style={styles.productTotalStackBox}>
+        <Text style={styles.productTotalStack}>
+          {item.total_price ||
+            item.quantity * (item.product?.price || 0) ||
+            '0'}{' '}
+          ₼
+        </Text>
+      </View>
+    </View>
+  );
+
+  const hasProducts =
+    order.items && Array.isArray(order.items) && order.items.length > 0;
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.modalContentContainer}>
       <View style={styles.modalHeader}>
         <Text style={styles.modalTitle}>Sifariş Detayı</Text>
+        <TouchableOpacity onPress={_onClose} style={styles.closeButton}>
+          <Feather name="x" size={20} color="#666" />
+        </TouchableOpacity>
       </View>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 20, paddingBottom: 8 }}
-        showsVerticalScrollIndicator={false}
+
+      <BottomSheetScrollView
+        style={styles.scrollViewContainer}
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={true}
+        scrollEnabled={true}
+        keyboardShouldPersistTaps="handled"
+        bounces={true}
+        alwaysBounceVertical={false}
       >
         <View style={styles.summaryGridCustom}>
           {summaryRows.map((row, idx) => (
@@ -366,7 +407,7 @@ const OrderDetailModal = ({
                 {row[0].label === 'Status' ? (
                   <Text
                     style={[
-                      styles.statusText,
+                      styles.summaryValueCustom,
                       { color: getStatusColor(order.status) },
                     ]}
                   >
@@ -380,7 +421,7 @@ const OrderDetailModal = ({
                 <Text style={styles.summaryLabelCustom}>{row[1].label}</Text>
                 <Text
                   style={styles.summaryValueCustom}
-                  numberOfLines={row[1].multiline ? 2 : 1}
+                  numberOfLines={row[1].multiline ? 3 : 1}
                   ellipsizeMode="tail"
                 >
                   {row[1].value}
@@ -390,55 +431,30 @@ const OrderDetailModal = ({
           ))}
         </View>
 
-        {order.items &&
-          Array.isArray(order.items) &&
-          order.items.length > 0 && (
-            <View style={{ marginTop: 12 }}>
-              {order.items.map((item: any, idx: number) => (
-                <View
-                  key={`item_${item.id}_${idx}`}
-                  style={styles.productRowCustomNew}
-                >
-                  {item.product?.img_url ? (
-                    <Image
-                      source={{ uri: item.product.img_url }}
-                      style={styles.productImageCustomLarge}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View style={styles.productImageCustomLarge} />
-                  )}
-                  <View style={styles.productInfoStack}>
-                    <Text style={styles.productNameStack} numberOfLines={1}>
-                      {item.product?.title ||
-                        item.product?.name ||
-                        'Məhsul adı yoxdur'}
-                    </Text>
-                    <Text style={styles.productPriceStack}>
-                      {item.product?.price || '0'} ₼
-                    </Text>
-                    <Text style={styles.productQtyStack}>
-                      {item.quantity || 1} {item.product?.unit || 'əd'}
-                    </Text>
+        {hasProducts && (
+          <View style={styles.productsContainer}>
+            <Text style={styles.productsTitle}>
+              Məhsullar ({order.items.length})
+            </Text>
+            <View style={{ maxHeight: 240 }}>
+              <ScrollView showsVerticalScrollIndicator={true}>
+                {order.items.map((item: any, idx: number) => (
+                  <View key={`product_${item.id}_${idx}`}>
+                    {renderProductItem({ item })}
                   </View>
-                  <View style={styles.productTotalStackBox}>
-                    <Text style={styles.productTotalStack}>
-                      {item.total_price ||
-                        item.quantity * (item.product?.price || 0) ||
-                        '0'}{' '}
-                      ₼
-                    </Text>
-                  </View>
-                </View>
-              ))}
-
-              <View style={styles.totalSumRow}>
-                <Text style={styles.totalSumLabel}>Total:</Text>
-                <Text style={styles.totalSumValue}>{order.total || '0'} ₼</Text>
-              </View>
+                ))}
+              </ScrollView>
             </View>
-          )}
-      </ScrollView>
+          </View>
+        )}
+
+        <View style={styles.totalSumRow}>
+          <Text style={styles.totalSumLabel}>Total:</Text>
+          <Text style={styles.totalSumValue}>{order.total || '0'} ₼</Text>
+        </View>
+
+        <View style={{ height: 30 }} />
+      </BottomSheetScrollView>
     </View>
   );
 };
@@ -455,6 +471,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
   },
   headerTitle: {
     fontSize: 20,
@@ -477,11 +496,6 @@ const styles = StyleSheet.create({
   rightCol: {
     flex: 1,
     justifyContent: 'center',
-  },
-  noLabel: {
-    fontSize: 12,
-    color: '#5B6583',
-    marginBottom: 2,
   },
   noValue: {
     fontSize: 14,
@@ -508,28 +522,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  modal: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
-  modalContent: {
+
+  bottomSheetContainer: {
+    flex: 1,
     backgroundColor: '#fff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 8,
-    paddingBottom: 0,
-    minHeight: 420,
-    maxHeight: '90%',
   },
-  modalHandle: {
-    width: 48,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: '#E0E0E0',
-    alignSelf: 'center',
-    marginBottom: 8,
-    marginTop: 4,
+  modalContentContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
+  scrollViewContainer: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+
   modalLoading: {
     flex: 1,
     justifyContent: 'center',
@@ -547,17 +556,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
   },
-  retryButton: {
-    marginTop: 16,
-    backgroundColor: '#76CB4F',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  retryButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -566,193 +564,24 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
+    backgroundColor: '#fff',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#222',
   },
-  summaryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 20,
+  closeButton: {
+    padding: 4,
   },
-  summaryItem: {
-    width: '50%',
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-  },
-  summaryLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
-  },
-  summaryValue: {
-    fontSize: 14,
-    color: '#222',
-    fontWeight: '500',
-  },
-  productRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#f0f0f0',
-  },
-  productImageContainer: {
-    width: 50,
-    height: 50,
-    marginRight: 15,
-  },
-  productImageSmall: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-  },
-  productInfoSimple: {
-    flex: 1,
-  },
-  productNameSimple: {
-    fontSize: 14,
-    color: '#222',
-    fontWeight: '500',
-    marginBottom: 4,
-  },
-  productPriceSimple: {
-    fontSize: 13,
-    color: '#666',
-  },
-  noProductsContainer: {
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-  },
-  noProductsText: {
-    marginTop: 8,
-    color: '#666',
-    fontSize: 16,
-  },
-  base64Text: {
-    fontSize: 8,
-    color: '#999',
-    marginTop: 2,
-  },
-  debugText: {
-    marginTop: 8,
-    color: '#aaa',
-    fontSize: 10,
-    fontFamily: 'monospace',
-  },
-  infoBox: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  infoTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 8,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  infoLabel: {
-    fontSize: 13,
-    color: '#666',
-    minWidth: 70,
-    fontWeight: '500',
-  },
-  infoValue: {
-    fontSize: 13,
-    color: '#222',
-    marginLeft: 8,
-    fontWeight: '500',
-  },
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#2D3651',
-    marginBottom: 8,
-  },
-  infoDetail: {
-    fontSize: 13,
-    color: '#222',
-    marginBottom: 4,
-  },
-  totalText: {
-    fontSize: 15,
-    color: '#222',
-    fontWeight: 'bold',
-    marginTop: 8,
-  },
-  productsTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2D3651',
-    marginTop: 12,
-    marginBottom: 8,
-  },
-  productItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  productImage: {
-    width: 56,
-    height: 56,
-    borderRadius: 8,
-    marginRight: 12,
-    backgroundColor: '#f0f0f0',
-  },
-  placeholderImage: {
-    width: 56,
-    height: 56,
-    borderRadius: 8,
-    marginRight: 12,
-    backgroundColor: '#f0f0f0',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  productDetails: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  productName: {
-    fontSize: 14,
-    color: '#222',
-    fontWeight: 'bold',
-    marginBottom: 2,
-  },
-  productMeta: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 1,
-  },
-  productTotal: {
-    fontSize: 13,
-    color: '#222',
-    fontWeight: 'bold',
-    marginTop: 2,
-  },
+
   summaryGridCustom: {
     marginBottom: 16,
+    marginTop: 16,
   },
   summaryRowCustom: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   summaryColCustom: {
     flex: 1,
@@ -760,185 +589,101 @@ const styles = StyleSheet.create({
   },
   summaryLabelCustom: {
     fontSize: 13,
-    color: '#222',
-    fontWeight: 'bold',
-    marginBottom: 2,
+    color: '#666',
+    fontWeight: '600',
+    marginBottom: 4,
   },
   summaryValueCustom: {
     fontSize: 14,
-    color: '#444',
-    marginBottom: 2,
+    color: '#222',
+    fontWeight: '500',
   },
-  productRowCustom: {
+
+  productsContainer: {
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  productsTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2D3651',
+    marginBottom: 12,
+  },
+  productsScrollView: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
+    borderRadius: 8,
+    paddingVertical: 8,
+  },
+  productRowCustomNew: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
-    marginBottom: 2,
-  },
-  productImageCustom: {
-    width: 54,
-    height: 54,
-    borderRadius: 8,
-    marginRight: 12,
-    backgroundColor: '#f0f0f0',
-  },
-  productInfoCustom: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  productNameCustom: {
-    fontSize: 15,
-    color: '#222',
-    fontWeight: 'bold',
-    marginBottom: 2,
-  },
-  productMetaCustom: {
-    fontSize: 13,
-    color: '#666',
-  },
-  productMetaRowCustom: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 2,
-    gap: 12,
-  },
-  productTotalCustom: {
-    fontSize: 14,
-    color: '#2D3651',
-    fontWeight: 'bold',
-    marginLeft: 6,
-  },
-  productInfoCustomRight: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-  },
-  productNameCustomRight: {
-    fontSize: 15,
-    color: '#222',
-    fontWeight: 'bold',
-    marginBottom: 2,
-    textAlign: 'right',
-  },
-  productMetaCustomRight: {
-    fontSize: 13,
-    color: '#666',
-    marginBottom: 2,
-    textAlign: 'right',
-  },
-  productTotalCustomRight: {
-    fontSize: 14,
-    color: '#2D3651',
-    fontWeight: 'bold',
-    marginTop: 2,
-    textAlign: 'right',
   },
   productImageCustomLarge: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
+    width: 60,
+    height: 60,
+    borderRadius: 8,
     marginRight: 12,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
+    backgroundColor: '#f8f8f8',
   },
-  productInfoCustomLeft: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  productNameCustomLeft: {
-    fontSize: 17,
-    color: '#222',
-    fontWeight: 'bold',
-    marginBottom: 4,
-    textAlign: 'left',
-  },
-  productTotalCustomLeft: {
-    fontSize: 15,
-    color: '#2D3651',
-    fontWeight: 'bold',
-    marginTop: 4,
-    textAlign: 'left',
-  },
-  productRowCustomNew: {
-    flexDirection: 'row',
+  placeholderImage: {
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    marginBottom: 2,
+    justifyContent: 'center',
   },
   productInfoStack: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'flex-start',
-    marginLeft: 2,
+    paddingRight: 8,
   },
   productNameStack: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#222',
-    fontWeight: 'bold',
-    marginBottom: 2,
-    textAlign: 'left',
+    fontWeight: '600',
+    marginBottom: 4,
   },
   productPriceStack: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
     marginBottom: 2,
-    textAlign: 'left',
   },
   productQtyStack: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#888',
-    textAlign: 'left',
   },
   productTotalStackBox: {
-    minWidth: 70,
+    minWidth: 60,
     alignItems: 'flex-end',
   },
   productTotalStack: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#2D3651',
     fontWeight: 'bold',
-    textAlign: 'right',
   },
+
   totalSumRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 0,
-    marginBottom: 4,
-    gap: 8,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    marginTop: 20,
+    marginBottom: 10,
   },
   totalSumLabel: {
     fontSize: 17,
     color: '#222',
     fontWeight: 'bold',
-    marginRight: 6,
   },
   totalSumValue: {
     fontSize: 18,
     color: '#76CB4F',
     fontWeight: 'bold',
-  },
-  bottomSheetContent: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  handle: {
-    width: 48,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#E0E0E0',
-    alignSelf: 'center',
-    marginBottom: 8,
-    marginTop: 4,
   },
 });
 

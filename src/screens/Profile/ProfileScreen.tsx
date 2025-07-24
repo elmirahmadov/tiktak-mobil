@@ -4,7 +4,6 @@ import { useAuthStore } from '../../common/store/Auth';
 import { useUploadStore } from '../../common/store/Upload';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Footer from '../../common/components/Footer';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
@@ -112,7 +111,10 @@ const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
             style={styles.menuItem}
             onPress={async () => {
               await actions.logout();
-              _navigation.replace('Login');
+              _navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+              });
             }}
           >
             <Feather
@@ -125,7 +127,6 @@ const ProfileScreen = ({ navigation: _navigation }: { navigation: any }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <Footer navigation={_navigation} active="Profile" />
     </View>
   );
 };

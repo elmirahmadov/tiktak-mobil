@@ -17,7 +17,6 @@ import {
 } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import Header from '../../common/components/Header';
-import Footer from '../../common/components/Footer';
 import { useCategoriesStore } from '../../common/store/Categories';
 import { useProductsStore } from '../../common/store/Products';
 import { useBasketStore } from '../../common/store/Basket';
@@ -385,16 +384,13 @@ const CategoryDetailScreen = ({ navigation }: { navigation: any }) => {
           )}
         </View>
       )}
-      <View style={{ backgroundColor: '#fff' }}>
-        <Footer navigation={navigation} active="Home" />
-      </View>
+      <View style={{ backgroundColor: '#fff' }}>{/* Footer removed */}</View>
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
-        style={{ zIndex: 50 }}
         backgroundStyle={{
           backgroundColor: '#fff',
         }}
@@ -720,7 +716,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 70,
+    bottom: 10,
     zIndex: 10,
     alignItems: 'center',
   },

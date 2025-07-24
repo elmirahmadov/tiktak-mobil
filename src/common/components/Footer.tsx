@@ -101,11 +101,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 60,
     backgroundColor: '#FFFF',
-    position: 'absolute',
+    position: 'relative',
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 1,
   },
   tab: {
     alignItems: 'center',

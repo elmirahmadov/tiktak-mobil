@@ -38,7 +38,7 @@ export default function LoginScreen({ navigation, route }: any) {
     await actions.login(
       { phone: cleanPhoneNumber(phone), password },
       () => {
-        navigation.replace('Home');
+        navigation.replace('MainTabs', { screen: 'Home' });
       },
       _err => {},
     );
