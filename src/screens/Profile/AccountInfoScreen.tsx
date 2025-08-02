@@ -42,7 +42,7 @@ const AccountInfoScreen = ({ navigation }: { navigation: any }) => {
       updateData,
       async () => {
         await actions.getProfile();
-        navigation.navigate('Profile');
+        navigation.navigate('MainTabs', { screen: 'Profile' });
         setLoading(false);
       },
       () => {

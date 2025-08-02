@@ -74,7 +74,7 @@ const Footer = ({ navigation, active }: FooterProps) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.tab}
-        onPress={() => navigation.navigate('Profile')}
+        onPress={() => navigation.navigate('MainTabs', { screen: 'Profile' })}
       >
         <Feather
           name="user"
